@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 
 public class B {
 
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/b/input.txt";
-  private static final String FILE = "input.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/b/input1.txt";
+  private static final String FILE = "input1.txt";
 
   public static void main(String[] args) {
 /*    test1();
