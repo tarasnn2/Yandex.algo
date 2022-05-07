@@ -9,8 +9,8 @@ public class A {
   public static void main(String[] args) throws IOException {
     // test1();
     // test2();
-    // String file = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/a/input1.txt";
-    String file = "input1.txt";
+    // String file = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/a/input01.txt";
+    String file = "input01.txt";
     try (Scanner scanner = new Scanner(new File(file)); ) {
       scanner.useDelimiter(" ");
       int a = Integer.parseInt(scanner.next());

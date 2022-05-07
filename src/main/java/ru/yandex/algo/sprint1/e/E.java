@@ -10,7 +10,7 @@ public class E {
 
   private static final String SEPARATOR = " ";
   private static final String DELIMITER = "\n";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/e/input1.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/e/input01.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) {

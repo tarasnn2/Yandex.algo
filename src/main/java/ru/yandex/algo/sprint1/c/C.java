@@ -12,7 +12,7 @@ import java.util.List;
 public class C {
 
   private static final String SEPARATOR = " ";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/c/input1.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/c/input01.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) {

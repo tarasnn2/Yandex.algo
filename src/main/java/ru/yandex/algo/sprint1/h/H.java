@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class H {
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/h/input1.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/h/input01.txt";
   // private static final String FILE = "input.txt";
 
   public static void main(String[] args) {
