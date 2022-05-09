@@ -7,6 +7,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * Вечером ребята решили поиграть в игру «Большое число». Даны числа. Нужно определить, какое самое большое число можно из них составить.
+ *
+ * <p>Формат ввода В первой строке записано n — количество чисел. Оно не превосходит 100. Во второй строке через пробел записаны n
+ * неотрицательных чисел, каждое из которых не превосходит 1000.
+ *
+ * <p>Формат вывода Нужно вывести самое большое число, которое можно составить из данных чисел.
+ */
 public class H {
   private static final String SEPARATOR = " ";
   private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint3/h/input13.txt";
@@ -24,7 +32,7 @@ public class H {
       final int elementsCount = Integer.parseInt(in.readLine());
       elements = in.readLine().split(SEPARATOR);
     }
-    final String[] sorted = sort(elements);
+    final String[] sorted = bubbleSort(elements);
     StringBuilder result = new StringBuilder(sorted.length);
     for (String s : sorted) {
       // result.append(s).append("|");
@@ -33,7 +41,7 @@ public class H {
     System.out.print(result);
   }
 
-  private static String[] sort(String[] elements) {
+  private static String[] bubbleSort(String[] elements) {
     boolean isNotSorted = true;
     while (isNotSorted) {
       isNotSorted = false;
