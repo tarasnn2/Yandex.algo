@@ -1,4 +1,4 @@
-//package ru.yandex.algo.sprint3.h;
+package ru.yandex.algo.sprint3.h;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -94,10 +94,6 @@ public class H {
   }
 
   private static int compare(String a, String b) {
-    if (Integer.parseInt(a + b) >= Integer.parseInt(b + a)) {
-      return 1;
-    } else {
-      return -1;
-    }
+    return Integer.parseInt(a + b) >= Integer.parseInt(b + a) ? 1 : -1;
   }
 }
