@@ -1,4 +1,4 @@
-package ru.yandex.algo.sprint3.h;
+//package ru.yandex.algo.sprint3.h;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * Вечером ребята решили поиграть в игру «Большое число». Даны числа. Нужно определить, какое самое большое число можно из них составить.
@@ -16,12 +17,14 @@ import java.nio.file.Paths;
  * <p>Формат вывода Нужно вывести самое большое число, которое можно составить из данных чисел.
  */
 public class H {
+  private static final String DESC = "DESK";
+  private static final String ASC = "ASC";
+
   private static final String SEPARATOR = " ";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint3/h/input13.txt";
-  // private static final String FILE = "input.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint3/h/input26.txt";
+  private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
-    // test();
     execute();
   }
 
@@ -32,96 +35,69 @@ public class H {
       final int elementsCount = Integer.parseInt(in.readLine());
       elements = in.readLine().split(SEPARATOR);
     }
-    final String[] sorted = bubbleSort(elements);
+    final String[] sorted = mergeSort(elements, DESC);
     StringBuilder result = new StringBuilder(sorted.length);
     for (String s : sorted) {
-      // result.append(s).append("|");
       result.append(s);
     }
     System.out.print(result);
   }
 
-  private static String[] bubbleSort(String[] elements) {
-    boolean isNotSorted = true;
-    while (isNotSorted) {
-      isNotSorted = false;
-      for (int i = 0; i < elements.length; i++) {
-        int next = i + 1;
-        if (next < elements.length) {
-          String iValueString = elements[i];
-          String nextValueString = elements[next];
-          if (-1 == compare(iValueString, nextValueString)) {
-            elements[next] = iValueString;
-            elements[i] = nextValueString;
-            isNotSorted = true;
-          }
+  private static String[] mergeSort(String[] array, String directionName) {
+    if (1 == array.length) {
+      return array;
+    }
+    final int mid = array.length / 2;
+    final String[] left = mergeSort(Arrays.copyOfRange(array, 0, mid), directionName);
+    final String[] right = mergeSort(Arrays.copyOfRange(array, mid, array.length), directionName);
+    final String[] result = new String[array.length];
+
+    int l = 0;
+    int r = 0;
+    int k = 0;
+
+    while (l < left.length && r < right.length) {
+      int compareResult = compare(left[l], right[r]);
+      if (directionName.equals(ASC)) {
+        if (compareResult > 0) {
+          result[k] = right[r];
+          r++;
+        } else {
+          result[k] = left[l];
+          l++;
+        }
+      } else {
+        if (compareResult > 0) {
+          result[k] = left[l];
+          l++;
+        } else {
+          result[k] = right[r];
+          r++;
         }
       }
+      k++;
     }
-    return elements;
+
+    while (l < left.length) {
+      result[k] = left[l];
+      l++;
+      k++;
+    }
+
+    while (r < right.length) {
+      result[k] = right[r];
+      r++;
+      k++;
+    }
+
+    return result;
   }
 
   private static int compare(String a, String b) {
-    if (a.equals(b)) {
-      return 0;
-    }
-    final String[] aSplinted = a.split("");
-    final String[] bSplinted = b.split("");
-    if (bSplinted.length < aSplinted.length) {
-      return compareInner(bSplinted, aSplinted) == 1 ? -1 : 1;
+    if (Integer.parseInt(a + b) >= Integer.parseInt(b + a)) {
+      return 1;
     } else {
-      return compareInner(aSplinted, bSplinted);
+      return -1;
     }
-  }
-
-  private static int compareInner(String[] lessLength, String[] moreLength) {
-    int a = -1; // всегда будет первая итерация и -1 затрется
-    for (int i = 0; i < moreLength.length; i++) {
-      final int b = Integer.parseInt(moreLength[i]);
-
-      if (lessLength.length == moreLength.length) {
-        a = Integer.parseInt(lessLength[i]);
-        if (a < b) {
-          return -1;
-        } else if (a > b) {
-          return 1;
-        }
-      } else { // lessLength < moreLength
-        if (i < lessLength.length) {
-          a = Integer.parseInt(lessLength[i]);
-          if (a < b) {
-            return -1;
-          } else if (a > b) {
-            return 1;
-          }
-        } else if (b == 0) {
-          return 1;
-        } else if (b > a) {
-          return -1;
-        } else {
-          return 1;
-        }
-      }
-    }
-    return 0;
-  }
-
-  private static void test() {
-
-    assert compare("8", "88") == 1;
-    assert compare("88", "8") == -1;
-
-    assert compare("1", "10") == 1;
-    assert compare("10", "1") == -1;
-
-    assert compare("66", "68") == -1;
-    assert compare("68", "66") == 1;
-
-    assert compare("89", "89") == 0;
-
-    assert compare("89000", "89") == -1;
-
-    assert compare("8", "89") == -1;
-    assert compare("89", "8") == 1;
   }
 }
