@@ -3,70 +3,13 @@ package ru.yandex.algo.sprint3;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class SortUtility {
-  private static final BiFunction<String, String, Integer> lexicographicComparator =
-      (String a, String b) -> {
-        final int result = a.compareTo(b);
-        // System.out.println(a + ".compareTo(" + b + ") = " + result);
-        return Integer.compare(0, result);
-      };
-
+public class SortCounting {
   private static final BiFunction<Integer, Integer, Integer> twoDigitComparator = Integer::compare;
 
   public static void main(String[] args) {
-    testMergeSort();
     testCountingSort();
   }
 
-  public static String[] mergeSort(String[] array, Direction direction, BiFunction<String, String, Integer> comparator) {
-    if (1 == array.length) {
-      return array;
-    }
-    final int mid = array.length / 2;
-    final String[] left = mergeSort(Arrays.copyOfRange(array, 0, mid), direction, comparator);
-    final String[] right = mergeSort(Arrays.copyOfRange(array, mid, array.length), direction, comparator);
-    final String[] result = new String[array.length];
-
-    int l = 0;
-    int r = 0;
-    int k = 0;
-
-    while (l < left.length && r < right.length) {
-      int compareResult = comparator.apply(left[l], right[r]);
-      if (Direction.ASC == direction) {
-        if (compareResult > 0) {
-          result[k] = right[r];
-          r++;
-        } else {
-          result[k] = left[l];
-          l++;
-        }
-      } else {
-        if (compareResult > 0) {
-          result[k] = left[l];
-          l++;
-        } else {
-          result[k] = right[r];
-          r++;
-        }
-      }
-      k++;
-    }
-
-    while (l < left.length) {
-      result[k] = left[l];
-      l++;
-      k++;
-    }
-
-    while (r < right.length) {
-      result[k] = right[r];
-      r++;
-      k++;
-    }
-
-    return result;
-  }
 
   public static int[] countingSort(int[] array, Direction direction, BiFunction<Integer, Integer, Integer> comparator, int maxValue) {
     final Integer[] countedArray = new Integer[maxValue];
@@ -107,13 +50,6 @@ public class SortUtility {
   private enum Direction {
     DESC,
     ASC;
-  }
-
-  private static void testMergeSort() {
-    System.out.println("Test testMergeSort start");
-    final String[] sorted = mergeSort(new String[] {"b", "a", "c"}, Direction.DESC, lexicographicComparator);
-    assert Arrays.equals(sorted, new String[] {"a", "b", "c"});
-    System.out.println("Test testMergeSort end");
   }
 
   private static void testCountingSort() {
