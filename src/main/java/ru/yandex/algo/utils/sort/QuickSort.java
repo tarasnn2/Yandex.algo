@@ -1,11 +1,11 @@
-package ru.yandex.algo.sprint3;
+package ru.yandex.algo.utils.sort;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class SortQuick<T> {
+public class QuickSort<T> {
 
-  public SortQuick(BiFunction<T, T, Integer> comparator, Direction direction) {
+  public QuickSort(BiFunction<T, T, Integer> comparator, Direction direction) {
     this.comparator = comparator;
     this.direction = direction;
   }
@@ -65,21 +65,21 @@ public class SortQuick<T> {
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {1, 3, 4, 4, 5, 5, 5, 6};
-      new SortQuick<Integer>(Integer::compare, Direction.ASC).sort(source);
+      new QuickSort<Integer>(Integer::compare, Direction.ASC).sort(source);
       assert Arrays.equals(source, expect);
     }
 
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {6, 5, 5, 5, 4, 4, 3, 1};
-      new SortQuick<Integer>(Integer::compare, Direction.DESC).sort(source);
+      new QuickSort<Integer>(Integer::compare, Direction.DESC).sort(source);
       assert Arrays.equals(source, expect);
     }
 
     {
       final BiFunction<String, String, Integer> lexicographicComparator = (String a, String b) -> Integer.compare(0, a.compareTo(b));
       final String[] source = new String[] {"b", "a", "c"};
-      new SortQuick<String>(lexicographicComparator, Direction.DESC).sort(source);
+      new QuickSort<String>(lexicographicComparator, Direction.DESC).sort(source);
       final String[] expected = new String[] {"a", "b", "c"};
       assert Arrays.equals(source, expected);
     }
@@ -87,7 +87,7 @@ public class SortQuick<T> {
     {
       final BiFunction<String, String, Integer> lexicographicComparator = (String a, String b) -> Integer.compare(0, a.compareTo(b));
       final String[] source = new String[] {"c", "a", "b"};
-      new SortQuick<String>(lexicographicComparator, Direction.ASC).sort(source);
+      new QuickSort<String>(lexicographicComparator, Direction.ASC).sort(source);
       final String[] expected = new String[] {"c", "b", "a"};
       assert Arrays.equals(source, expected);
     }

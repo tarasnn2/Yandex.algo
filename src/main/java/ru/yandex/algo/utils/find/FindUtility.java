@@ -1,4 +1,4 @@
-package ru.yandex.algo.sprint3;
+package ru.yandex.algo.utils.find;
 
 public class FindUtility {
   private static final String DESC = "DESK";

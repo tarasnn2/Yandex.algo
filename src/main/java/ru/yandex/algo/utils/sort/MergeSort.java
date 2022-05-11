@@ -1,10 +1,10 @@
-package ru.yandex.algo.sprint3;
+package ru.yandex.algo.utils.sort;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class SortMerge<T> {
+public class MergeSort<T> {
   private Class<T> clazz;
   private static final BiFunction<String, String, Integer> lexicographicComparator =
       (String a, String b) -> {
@@ -19,7 +19,7 @@ public class SortMerge<T> {
     test();
   }
 
-  public SortMerge(Class<T> clazz) {
+  public MergeSort(Class<T> clazz) {
     this.clazz = clazz; // TODO replace by reflection
   }
 
@@ -82,21 +82,21 @@ public class SortMerge<T> {
     System.out.println("Test start");
     {
       final String[] source = new String[] {"b", "a", "c"};
-      final String[] sorted = new SortMerge<>(String.class).sort(source, Direction.DESC, lexicographicComparator);
+      final String[] sorted = new MergeSort<>(String.class).sort(source, Direction.DESC, lexicographicComparator);
       final String[] expected = new String[] {"a", "b", "c"};
       assert Arrays.equals(sorted, expected);
     }
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {6, 5, 5, 5, 4, 4, 3, 1};
-      final Integer[] sorted = new SortMerge<>(Integer.class).sort(source, Direction.DESC, twoDigitComparator);
+      final Integer[] sorted = new MergeSort<>(Integer.class).sort(source, Direction.DESC, twoDigitComparator);
       assert Arrays.equals(sorted, expect);
     }
 
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {1, 3, 4, 4, 5, 5, 5, 6};
-      final Integer[] sorted = new SortMerge<>(Integer.class).sort(source, Direction.ASC, twoDigitComparator);
+      final Integer[] sorted = new MergeSort<>(Integer.class).sort(source, Direction.ASC, twoDigitComparator);
       assert Arrays.equals(sorted, expect);
     }
 

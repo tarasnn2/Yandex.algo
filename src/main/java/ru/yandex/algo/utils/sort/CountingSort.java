@@ -1,9 +1,9 @@
-package ru.yandex.algo.sprint3;
+package ru.yandex.algo.utils.sort;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class SortCounting {
+public class CountingSort {
   private static final BiFunction<Integer, Integer, Integer> twoDigitComparator = Integer::compare;
 
   public static void main(String[] args) {
