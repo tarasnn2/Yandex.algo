@@ -7,11 +7,11 @@ public class SortCounting {
   private static final BiFunction<Integer, Integer, Integer> twoDigitComparator = Integer::compare;
 
   public static void main(String[] args) {
-    testCountingSort();
+    test();
   }
 
 
-  public static int[] countingSort(int[] array, Direction direction, BiFunction<Integer, Integer, Integer> comparator, int maxValue) {
+  public static int[] sort(int[] array, Direction direction, BiFunction<Integer, Integer, Integer> comparator, int maxValue) {
     final Integer[] countedArray = new Integer[maxValue];
 
     for (int value : array) {
@@ -52,13 +52,13 @@ public class SortCounting {
     ASC;
   }
 
-  private static void testCountingSort() {
-    System.out.println("Test testCountingSort start");
+  private static void test() {
+    System.out.println("Test start");
     {
       int maxValue = 6;
       final int[] source = new int[] {4, 5, maxValue, 3, 1};
       final int[] expect = new int[] {1, 3, 4, 5, 6};
-      final int[] sorted = countingSort(source, Direction.ASC, twoDigitComparator, ++maxValue);
+      final int[] sorted = sort(source, Direction.ASC, twoDigitComparator, ++maxValue);
       assert Arrays.equals(sorted, expect);
     }
 
@@ -66,10 +66,10 @@ public class SortCounting {
       int maxValue = 6;
       final int[] source = new int[] {4, 4, 5, 5, 5, maxValue, 3, 1};
       final int[] expect = new int[] {6, 5, 5, 5, 4, 4, 3, 1};
-      final int[] sorted = countingSort(source, Direction.DESC, twoDigitComparator, ++maxValue);
+      final int[] sorted = sort(source, Direction.DESC, twoDigitComparator, ++maxValue);
       assert Arrays.equals(sorted, expect);
     }
 
-    System.out.println("Test testCountingSort end");
+    System.out.println("Test end");
   }
 }

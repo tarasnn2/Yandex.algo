@@ -1,4 +1,4 @@
-//package ru.yandex.algo.sprint1.e;
+package ru.yandex.algo.sprint1.e;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

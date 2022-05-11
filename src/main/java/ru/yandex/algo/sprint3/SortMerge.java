@@ -16,20 +16,20 @@ public class SortMerge<T> {
   private static final BiFunction<Integer, Integer, Integer> twoDigitComparator = Integer::compare;
 
   public static void main(String[] args) {
-    testMergeSort();
+    test();
   }
 
   public SortMerge(Class<T> clazz) {
     this.clazz = clazz; // TODO replace by reflection
   }
 
-  public T[] mergeSort(T[] array, Direction direction, BiFunction<T, T, Integer> comparator) {
+  public T[] sort(T[] array, Direction direction, BiFunction<T, T, Integer> comparator) {
     if (1 == array.length) {
       return array;
     }
     final int mid = array.length / 2;
-    final T[] left = mergeSort(Arrays.copyOfRange(array, 0, mid), direction, comparator);
-    final T[] right = mergeSort(Arrays.copyOfRange(array, mid, array.length), direction, comparator);
+    final T[] left = sort(Arrays.copyOfRange(array, 0, mid), direction, comparator);
+    final T[] right = sort(Arrays.copyOfRange(array, mid, array.length), direction, comparator);
     final T[] result = (T[]) Array.newInstance(clazz, array.length);
 
     int l = 0;
@@ -78,28 +78,28 @@ public class SortMerge<T> {
     ASC;
   }
 
-  private static void testMergeSort() {
-    System.out.println("Test testMergeSort start");
+  private static void test() {
+    System.out.println("Test start");
     {
       final String[] source = new String[] {"b", "a", "c"};
-      final String[] sorted = new SortMerge<>(String.class).mergeSort(source, Direction.DESC, lexicographicComparator);
+      final String[] sorted = new SortMerge<>(String.class).sort(source, Direction.DESC, lexicographicComparator);
       final String[] expected = new String[] {"a", "b", "c"};
       assert Arrays.equals(sorted, expected);
     }
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {6, 5, 5, 5, 4, 4, 3, 1};
-      final Integer[] sorted = new SortMerge<>(Integer.class).mergeSort(source, Direction.DESC, twoDigitComparator);
+      final Integer[] sorted = new SortMerge<>(Integer.class).sort(source, Direction.DESC, twoDigitComparator);
       assert Arrays.equals(sorted, expect);
     }
 
     {
       final Integer[] source = new Integer[] {4, 4, 5, 5, 5, 6, 3, 1};
       final Integer[] expect = new Integer[] {1, 3, 4, 4, 5, 5, 5, 6};
-      final Integer[] sorted = new SortMerge<>(Integer.class).mergeSort(source, Direction.ASC, twoDigitComparator);
+      final Integer[] sorted = new SortMerge<>(Integer.class).sort(source, Direction.ASC, twoDigitComparator);
       assert Arrays.equals(sorted, expect);
     }
 
-    System.out.println("Test testMergeSort end");
+    System.out.println("Test end");
   }
 }
