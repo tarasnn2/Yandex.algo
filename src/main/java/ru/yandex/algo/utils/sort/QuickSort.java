@@ -22,7 +22,7 @@ public class QuickSort<T> {
     sort(array, 0, array.length - 1);
   }
 
-  private void sort(T[] array, int begin, int end) {
+  public void sort(T[] array, int begin, int end) {
     if (begin >= end) {
       return;
     }
@@ -54,7 +54,7 @@ public class QuickSort<T> {
     return iNext;
   }
 
-  private enum Direction {
+  enum Direction {
     DESC,
     ASC;
   }
