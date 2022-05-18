@@ -1,4 +1,4 @@
-// package ru.yandex.algo.sprint3.g;
+package ru.yandex.algo.sprint3.g;
 
 import java.io.BufferedReader;
 import java.io.IOException;
