@@ -1,11 +1,10 @@
 package ru.yandex.algo.sprint3.final1;
-// 68373483
+// 68487205
 /**
- * Разделяем и властвуем.
- * п.1: если массив возрастает, ищем с помощью бинарного поиска O(log N).
- * п.2: если массив не возрастает, делим его на две части и к п.1.
+ * Разделяем и властвуем. п.1: если массив возрастает, ищем с помощью бинарного поиска O(log N). п.2: если массив не возрастает, делим его
+ * на две части и к п.1.
  *
- * доп. память не используется, сложность по памяти O(1)
+ * <p>память используется для рекурсии, сложность по памяти O(log N)
  */
 public class Solution {
 
@@ -28,30 +27,27 @@ public class Solution {
     if (valueMinIndex > valueMaxIndex) {
       final int mid = (minIndex + maxIndex) / 2;
       final int result = fixSearch(arr, minIndex, mid, k);
-      if (-1 == result) {
+      if (result == -1) {
         return fixSearch(arr, mid + 1, maxIndex, k);
-      } else {
-        return result;
       }
+      return result;
     }
     return binarySearch(arr, minIndex, maxIndex, k);
   }
 
   private static int binarySearch(int[] arr, int minIndex, int maxIndex, int k) {
     final int mid = (minIndex + maxIndex) / 2;
-    final int compareResult = Integer.compare(arr[mid], k);
-    if (0 == compareResult) {
+    if (arr[mid] == k) {
       return mid;
     }
     if (minIndex > maxIndex) {
       return -1; // not found
     }
 
-    if (-1 == compareResult) {
+    if (Integer.compare(arr[mid], k) == -1) {
       return binarySearch(arr, mid + 1, maxIndex, k);
-    } else {
-      return binarySearch(arr, minIndex, mid - 1, k);
     }
+    return binarySearch(arr, minIndex, mid - 1, k);
   }
 
   private static void test() {
