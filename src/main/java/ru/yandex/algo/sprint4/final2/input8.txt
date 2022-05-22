@@ -1,0 +1,175 @@
+26
+put 265 701
+get 265
+get 265
+get 265
+get 544
+get 265
+get 265
+get 265
+delete 265
+get 972
+put 812 364
+delete 498
+delete 812
+put 653 670
+put 354 707
+delete 653
+get 354
+get 354
+put 354 380
+put 354 405
+delete 591
+get 354
+put 718 134
+delete 440
+delete 354
+get 230
+put 718 163
+put 718 907
+put 718 532
+get 718
+get 718
+get 718
+get 718
+get 718
+get 718
+delete 70
+delete 718
+put 845 660
+get 539
+get 318
+put 845 578
+delete 845
+put 534 872
+put 5 342
+delete 508
+get 685
+delete 534
+get 5
+get 5
+get 5
+put 5 438
+put 656 435
+delete 324
+get 5
+get 614
+get 656
+delete 656
+put 5 540
+get 5
+put 114 843
+put 223 310
+put 114 34
+get 5
+delete 114
+get 223
+get 223
+get 330
+get 5
+get 934
+put 490 72
+get 223
+get 735
+delete 5
+delete 587
+get 223
+get 628
+delete 490
+put 223 267
+get 381
+get 171
+put 536 887
+delete 341
+put 637 940
+get 112
+delete 536
+put 637 154
+put 460 3
+put 223 282
+get 223
+get 637
+put 637 158
+delete 460
+delete 784
+get 637
+get 586
+get 223
+get 5
+delete 223
+get 637
+get 637
+
+701
+701
+701
+None
+701
+701
+701
+701
+None
+None
+364
+670
+707
+707
+None
+405
+None
+405
+None
+532
+532
+532
+532
+532
+532
+None
+532
+None
+None
+578
+None
+None
+872
+342
+342
+342
+None
+438
+None
+435
+435
+540
+540
+34
+310
+310
+None
+540
+None
+310
+None
+540
+None
+310
+None
+72
+None
+None
+None
+None
+887
+282
+154
+3
+None
+158
+None
+282
+None
+282
+158
+158
+

@@ -1,0 +1,52 @@
+30
+put 265 701
+get 265
+get 265
+get 265
+get 544
+get 265
+get 265
+get 265
+delete 265
+get 972
+put 812 364
+delete 498
+delete 812
+put 653 670
+put 354 707
+delete 653
+get 354
+get 354
+put 354 380
+put 354 405
+delete 591
+get 354
+put 718 134
+delete 440
+delete 354
+get 230
+put 718 163
+put 718 907
+put 718 532
+get 718
+
+701
+701
+701
+None
+701
+701
+701
+701
+None
+None
+364
+670
+707
+707
+None
+405
+None
+*134
+None
+532
