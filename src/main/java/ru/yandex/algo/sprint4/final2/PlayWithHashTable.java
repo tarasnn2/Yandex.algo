@@ -1,5 +1,5 @@
-//package ru.yandex.algo.sprint4.final2;
-
+package ru.yandex.algo.sprint4.final2;
+// 68586670
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,6 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+/**
+ * вставка, чтение и удаление работает за O(1)
+ * сложность по памяти O(1) тк размер фиксированный
+ */
 public class PlayWithHashTable {
   private static final String SEPARATOR = " ";
   private static final String DELIMITER = "\n";
@@ -15,8 +19,7 @@ public class PlayWithHashTable {
   private static final String COMMAND_PUT = "put";
   private static final String COMMAND_GET = "get";
   private static final String REPORT_COMMAND_NONE = "None";
-  private static final HashTable<Integer, Integer> map = new HashTable<>();
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final2/input13.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final2/input01.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
@@ -24,14 +27,15 @@ public class PlayWithHashTable {
       final int countOfCommand = Integer.parseInt(in.readLine());
       int i = 0;
       StringBuilder sb = new StringBuilder();
+      final HashTable<Integer, Integer> map = new HashTable<>();
       while (i++ < countOfCommand) {
-        doCommand(in.readLine(), sb);
+        doCommand(in.readLine(), sb, map);
       }
       System.out.println(sb);
     }
   }
 
-  private static void doCommand(String commandWithArg, StringBuilder sb) {
+  private static void doCommand(String commandWithArg, StringBuilder sb, HashTable<Integer, Integer> map) {
     final String[] commandWithArgArray = commandWithArg.split(SEPARATOR);
     final String command = commandWithArgArray[0];
 
@@ -47,7 +51,6 @@ public class PlayWithHashTable {
           final Integer key = Integer.valueOf(commandWithArgArray[1]);
           final Integer value = Integer.valueOf(commandWithArgArray[2]);
           map.put(key, value);
-          // System.out.println("----");
           break;
         }
       case COMMAND_GET:
@@ -71,8 +74,10 @@ public class PlayWithHashTable {
 }
 
 class HashTable<K extends Number, V extends Number> {
-  private static final int CAPACITY = 99_999;
-  private final Bucket<K, V>[] array = (Bucket<K, V>[]) new Bucket[CAPACITY];
+  private static final int CAPACITY = 100_003;
+
+  @SuppressWarnings("unchecked")
+  private final Bucket<K, V>[] array = new Bucket[CAPACITY];
 
   V put(K key, V value) {
     return getBucket(key)
@@ -149,10 +154,6 @@ class HashTable<K extends Number, V extends Number> {
 
   static class Bucket<K, V> {
 
-/*    public static void main(String[] args) {
-      test();
-    }*/
-
     public Bucket<K, V> getPrev() {
       return prev;
     }
@@ -199,9 +200,7 @@ class HashTable<K extends Number, V extends Number> {
   }
 
   private int getIndex(K key) {
-    //final int i = Math.abs(hash(key) % CAPACITY);
-    // System.out.println("key: " + key + " i:" + i);
-    return (int) key % CAPACITY;
+    return Math.abs(hash(key) % CAPACITY);
   }
 
   private static void test() {
@@ -264,11 +263,6 @@ class HashTable<K extends Number, V extends Number> {
 
       final Integer delete = map.delete(206577450);
       assert delete.equals(866671225);
-
-      // put 206577450 27041938
-      // get 206577450
-      // put 206577450 866671225
-      // delete 20657745 expect 866671225
     }
 
     {
@@ -310,7 +304,7 @@ class HashTable<K extends Number, V extends Number> {
       assert map.get(-99999).equals(11);
     }
 
-    /*    {
+    {
       final HashTable<Integer, Integer> map = new HashTable<>();
       for (int i = 0; i <= 1_000_000; i++) {
         map.put(i, i);
@@ -322,6 +316,6 @@ class HashTable<K extends Number, V extends Number> {
       for (int i = 0; i <= 1_000_000; i++) {
         assert map.delete(i).equals(i);
       }
-    }*/
+    }
   }
 }
