@@ -9,8 +9,31 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
- * вставка, чтение и удаление работает за O(1)
- * сложность по памяти O(1) тк размер фиксированный
+ * Вставка, чтение и удаление работает за O(1) сложность по памяти O(n).
+ *
+ * <p>
+ *
+ * <p>Добавление.
+ *
+ * <p>1. Вычисляем хэш ключа, O(1)
+ *
+ * <p>2. Рассчитываем номер индекса в массиве O(1)
+ *
+ * <p>3. Если это первый элемент в ячейке - добавляем, иначе, пробегаемся по связанному списку сравнивая объекты (ключ) по equal. Если
+ * элемент найден - заменяем ему значение, если нет добавляем в начало списка.
+ *
+ * <p>
+ *
+ * <p>Удаление.
+ *
+ * <p>Ищем элемент аналогично добавлению, удаляем элемент из связанного списка переставляя указатели или, если элемент единственны -
+ * зануляем ячейку массива
+ *
+ * <p>
+ *
+ * <p>Замена.
+ *
+ * <p>Ищем элемент аналогично добавлению. Если элемент найден - меняем ему значение.
  */
 public class PlayWithHashTable {
   private static final String SEPARATOR = " ";
@@ -23,10 +46,11 @@ public class PlayWithHashTable {
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
-    try (BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
+    try (final BufferedReader in =
+        new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
       final int countOfCommand = Integer.parseInt(in.readLine());
       int i = 0;
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       final HashTable<Integer, Integer> map = new HashTable<>();
       while (i++ < countOfCommand) {
         doCommand(in.readLine(), sb, map);
@@ -76,6 +100,8 @@ public class PlayWithHashTable {
 class HashTable<K extends Number, V extends Number> {
   private static final int CAPACITY = 100_003;
 
+  // не понятно, как использовать ArrayList при добавлении в еще не существующий элемент
+  // Throws: IndexOutOfBoundsException – if the index is out of range (index < 0 || index > size())
   @SuppressWarnings("unchecked")
   private final Bucket<K, V>[] array = new Bucket[CAPACITY];
 
@@ -110,22 +136,23 @@ class HashTable<K extends Number, V extends Number> {
 
   V delete(K key) {
     return getBucket(key)
-        .map(
-            bucketForDelete -> {
-              final Bucket<K, V> next = bucketForDelete.getNext();
-              final Bucket<K, V> prev = bucketForDelete.getPrev();
-              if (null != next) {
-                next.setPrev(prev);
-              }
-              if (null != prev) {
-                prev.setNext(next);
-              }
-              bucketForDelete.setNext(null);
-              bucketForDelete.setPrev(null);
-              array[getIndex(key)] = prev;
-              return bucketForDelete.getValue();
-            })
+        .map(bucketForDelete -> deleteBacked(bucketForDelete, key))
         .orElse(null);
+  }
+
+  private V deleteBacked(Bucket<K, V> bucket, K key) {
+    final Bucket<K, V> next = bucket.getNext();
+    final Bucket<K, V> prev = bucket.getPrev();
+    if (null != next) {
+      next.setPrev(prev);
+    }
+    if (null != prev) {
+      prev.setNext(next);
+    }
+    bucket.setNext(null);
+    bucket.setPrev(null);
+    array[getIndex(key)] = prev;
+    return bucket.getValue();
   }
 
   private Optional<Bucket<K, V>> getBucket(K key) {
@@ -152,7 +179,20 @@ class HashTable<K extends Number, V extends Number> {
     return Optional.ofNullable(array[getIndex(key)]);
   }
 
-  static class Bucket<K, V> {
+  private int hash(K key) {
+    return (int) key;
+  }
+
+  private int getIndex(K key) {
+    return Math.abs(hash(key) % CAPACITY);
+  }
+
+  private static class Bucket<K, V> {
+
+    private final K key;
+    private V value;
+    private Bucket<K, V> prev;
+    private Bucket<K, V> next;
 
     public Bucket<K, V> getPrev() {
       return prev;
@@ -161,8 +201,6 @@ class HashTable<K extends Number, V extends Number> {
     public void setPrev(Bucket<K, V> prev) {
       this.prev = prev;
     }
-
-    private Bucket<K, V> prev;
 
     public Bucket(K key, V value) {
       this.key = key;
@@ -177,9 +215,6 @@ class HashTable<K extends Number, V extends Number> {
       this.next = next;
     }
 
-    private Bucket<K, V> next;
-    private final K key;
-
     public K getKey() {
       return key;
     }
@@ -191,16 +226,6 @@ class HashTable<K extends Number, V extends Number> {
     public void setValue(V value) {
       this.value = value;
     }
-
-    private V value;
-  }
-
-  private int hash(K key) {
-    return (int) key;
-  }
-
-  private int getIndex(K key) {
-    return Math.abs(hash(key) % CAPACITY);
   }
 
   private static void test() {

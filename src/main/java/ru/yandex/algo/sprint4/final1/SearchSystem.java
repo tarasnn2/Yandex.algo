@@ -16,10 +16,13 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Индексация работает за O(n) и требует O(n) памяти где n - кол-во слов в документе
- * Сбор статистики O(m) и требует O(m) памяти, где m - кол-во слов в запросе
- * Сортировка log(k) где k << n
- * таким образом асимптотическая сложность O(n+m) по вычислению и памяти
+ * Индексация работает за O(n) и требует O(n) памяти где n - кол-во слов в документе.
+ *
+ * <p>Сбор статистики O(m) и требует O(m) памяти, где m - кол-во слов в запросе.
+ *
+ * <p>Сортировка O(k) где k - кол-во запросов.
+ *
+ * <p>Таким образом, асимптотическая сложность O(n+m+k) по вычислению и O(n+m) памяти
  */
 public class SearchSystem {
 
@@ -27,11 +30,12 @@ public class SearchSystem {
   private static final String SEPARATOR = " ";
   private static final int LIMIT = 5;
 
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final1/input11.txt";
+  // private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final1/input11.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
-    try (BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
+    try (final BufferedReader in =
+        new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
 
       final int documentCount = Integer.parseInt(in.readLine());
       int documentNumber = 0;
@@ -57,8 +61,8 @@ public class SearchSystem {
         .forEach(
             word -> {
               final Map<Integer, Integer> wordStats = index.computeIfAbsent(word, k -> new HashMap<>());
-              Integer count = wordStats.getOrDefault(documentNumber, 0);
-              wordStats.put(documentNumber, ++count);
+              final Integer count = wordStats.getOrDefault(documentNumber, 0);
+              wordStats.put(documentNumber, count + 1);
             });
   }
 
@@ -72,7 +76,7 @@ public class SearchSystem {
               if (null != wordStats) {
                 wordStats.forEach(
                     (documentNumber, count) -> {
-                      Integer relevance = statistics.get(documentNumber);
+                      final Integer relevance = statistics.get(documentNumber);
                       final Integer countInDocument = wordStats.get(documentNumber);
                       if (null == relevance) {
                         statistics.put(documentNumber, countInDocument);
