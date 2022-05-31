@@ -1,4 +1,3 @@
-package ru.yandex.algo.sprint4.final1;
 // 68586205
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,8 +29,6 @@ public class SearchSystem {
   private static final String DELIMITER = "\n";
   private static final String SEPARATOR = " ";
   private static final int LIMIT = 5;
-
-  // private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final1/input11.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {

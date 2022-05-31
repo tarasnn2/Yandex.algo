@@ -1,4 +1,3 @@
-package ru.yandex.algo.sprint4.final2;
 // 68586670
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,7 +41,6 @@ public class PlayWithHashTable {
   private static final String COMMAND_PUT = "put";
   private static final String COMMAND_GET = "get";
   private static final String REPORT_COMMAND_NONE = "None";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/final2/input01.txt";
   private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {

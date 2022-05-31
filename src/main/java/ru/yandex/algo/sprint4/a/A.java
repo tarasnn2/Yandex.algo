@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class A {
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/a/input7.txt";
-  //private static final String FILE = "input.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint4/a/input03.txt";
+  private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
     try (BufferedReader in = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
@@ -29,18 +29,12 @@ public class A {
     final int firstIndex = 0;
     final int lastIndex = line.length() - 1;
     if (firstIndex == lastIndex) {
-      return line.charAt(firstIndex) % m;
+      return line.charAt(firstIndex);
     }
-    final int aModM = a % m;
-    long sum = ((long) (line.charAt(firstIndex) % m) * (aModM)) % m;
-    for (int i = 1; i < lastIndex; i++) {
-      sum = hornersMethodInner(sum % m, aModM, line.charAt(i) % m) % m;
+    long hash = 0;
+    for (int i = 0; i <= lastIndex; i++) {
+      hash = (hash * a % m + line.charAt(i)) % m;
     }
-    sum += (line.charAt(lastIndex)) % m;
-    return sum % m;
-  }
-
-  private static long hornersMethodInner(long sum, int a, int s) {
-    return (sum + s) * a;
+    return hash;
   }
 }
