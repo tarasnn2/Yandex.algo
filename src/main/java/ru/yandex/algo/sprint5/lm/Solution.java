@@ -1,14 +1,13 @@
-package ru.yandex.algo.sprint5.l;
+package ru.yandex.algo.sprint5.lm;
 
 public class Solution {
   public static int siftDown(int[] heap, int idx) {
-    final int vertexValue = heap[idx];
     final int idxLeftSibling = getIdxLeftSibling(heap, idx);
     final int idxRightSibling = getIdxRightSibling(heap, idx);
     if (idxLeftSibling == 0 && idxRightSibling == 0) {
       return idx;
     }
-
+    final int vertexValue = heap[idx];
     if (idxLeftSibling != 0 && idxRightSibling != 0) {
       final int idxPriority = heap[idxLeftSibling] > heap[idxRightSibling] ? idxLeftSibling : idxRightSibling;
       if (heap[idxPriority] > vertexValue) {
@@ -27,10 +26,28 @@ public class Solution {
     return idx;
   }
 
+  public static int siftUp(int[] heap, int idx) {
+    final int idxParent = getIdxParent(heap, idx);
+    if (idxParent == 0) {
+      return idx;
+    }
+    final int vertexValue = heap[idx];
+    if (heap[idxParent] < vertexValue) {
+      swap(heap, idxParent, idx);
+      return siftUp(heap, idxParent);
+    }
+    return idx;
+  }
+
   private static void swap(int[] array, int idx1, int idx2) {
     final int temp = array[idx1];
     array[idx1] = array[idx2];
     array[idx2] = temp;
+  }
+
+  private static int getIdxParent(int[] heap, int idxChildren) {
+    int index = idxChildren / 2;
+    return (index >= heap.length || index == 0) ? 0 : index;
   }
 
   private static int getIdxLeftSibling(int[] heap, int idxVertex) {
@@ -43,14 +60,22 @@ public class Solution {
     return index >= heap.length ? 0 : index;
   }
 
-  public static void main(String[] args) {
-    test();
-  }
+/*  public static void main(String[] args) {
+    testDown();
+    testUp();
+  }*/
 
-  private static void test() {
+  private static void testDown() {
     int[] sample = {-1, 12, 1, 8, 3, 4, 7};
     final int i = siftDown(sample, 2);
     System.out.println(i);
     assert i == 5;
+  }
+
+  private static void testUp() {
+    int[] sample = {-1, 12, 6, 8, 3, 15, 7};
+    final int i = siftUp(sample, 5);
+    System.out.println(i);
+    assert i == 1;
   }
 }
