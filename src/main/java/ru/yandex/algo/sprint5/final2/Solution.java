@@ -1,23 +1,19 @@
 package ru.yandex.algo.sprint5.final2;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
 public class Solution {
   public static Node remove(Node root, int key) {
     if (null == root) {
       return null;
     }
-
-    final Deque<Node> result = findByKey(root, key, new LinkedList<>());
-    final Node deleted = result.pollLast();
+    final Pair<Node> pair = findByKey(root, key, new Pair<>());
+    final Node deleted = pair.getDeleted();
 
     // удаляемый узел не найден
     if (null == deleted) {
       return root;
     }
 
-    final Node parent = result.pollLast();
+    final Node parent = pair.getParent();
 
     // удаляемый узел - единственный
     if (null == parent && null == root.getRight() && null == root.getLeft()) {
@@ -107,10 +103,10 @@ public class Solution {
   }
 
   private static Node findMostLeft(Node node) {
-    if (null == node.getLeft()) {
-      return node;
+    while (null != node.getLeft()) {
+      node = node.getLeft();
     }
-    return findMostLeft(node.getLeft());
+    return node;
   }
 
   private static boolean isRightChildren(Node children, Node parent) {
@@ -121,18 +117,41 @@ public class Solution {
     return children.equals(parent.getLeft());
   }
 
-  private static Deque<Node> findByKey(Node root, int key, Deque<Node> result) {
-    if (null == root) {
-      return new LinkedList<>();
+  private static Pair<Node> findByKey(Node vertex, int key, Pair<Node> pair) {
+    while (null != vertex) {
+      if (key == vertex.getValue()) {
+        pair.setDeleted(vertex);
+        return pair;
+      }
+      pair.setParent(vertex);
+      if (key > vertex.getValue()) {
+        vertex = vertex.getRight();
+      } else {
+        vertex = vertex.getLeft();
+      }
     }
-    result.add(root);
-    if (key == root.getValue()) {
-      return result;
+    return pair;
+  }
+
+  private static class Pair<T> {
+
+    private T deleted;
+    private T parent;
+
+    public T getDeleted() {
+      return deleted;
     }
-    if (key > root.getValue()) {
-      return findByKey(root.getRight(), key, result);
-    } else {
-      return findByKey(root.getLeft(), key, result);
+
+    public void setDeleted(T deleted) {
+      this.deleted = deleted;
+    }
+
+    public T getParent() {
+      return parent;
+    }
+
+    public void setParent(T parent) {
+      this.parent = parent;
     }
   }
 
@@ -173,6 +192,7 @@ public class Solution {
   }
 
   private static void test() {
+    // 00
     {
       Node node1 = new Node(null, null, 2);
       Node node2 = new Node(node1, null, 3);
@@ -187,6 +207,7 @@ public class Solution {
       assert newHead.getRight().getValue() == 8;
     }
 
+    // 21
     {
       Node node4 = new Node(null, null, 1);
       Node node5 = new Node(null, null, 3);
