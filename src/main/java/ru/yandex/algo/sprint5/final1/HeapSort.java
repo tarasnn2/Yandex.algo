@@ -1,5 +1,4 @@
-package ru.yandex.algo.sprint5.final1;
-
+//68858920
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,8 +21,7 @@ import java.nio.file.Paths;
 public class HeapSort {
   private static final String SEPARATOR = " ";
   private static final String DELIMITER = "\n";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint5/final1/input01.txt";
-  // private static final String FILE = "input.txt";
+  private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
     final Participant[] participants = getParticipants();
