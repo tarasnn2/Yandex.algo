@@ -12,53 +12,53 @@ public class Solution {
       final Node vertex = remove(root.getRight(), key);
       root.setRight(vertex);
     } else {
-      return removeInner(root);
+      return removeVertex(root);
     }
     return root;
   }
 
-  private static Node removeInner(final Node deleted) {
+  private static Node removeVertex(final Node vertex) {
     // удаляемый узел - лист
-    if (null == deleted.getRight() && null == deleted.getLeft()) {
+    if (null == vertex.getRight() && null == vertex.getLeft()) {
       return null;
     }
     // удаляемый узел имеет обе ветки
-    if (null != deleted.getLeft() && null != deleted.getRight()) {
-      return removeVertexWithBothShoulders(deleted);
+    if (null != vertex.getLeft() && null != vertex.getRight()) {
+      return removeVertexWithBothShoulders(vertex);
     }
     // удаляемый узел имеет только правую ветку
-    else if (null != deleted.getRight()) {
-      return removeVertexWithOnlyRightShoulder(deleted);
+    else if (null != vertex.getRight()) {
+      return removeVertexWithOnlyRightShoulder(vertex);
     }
     // удаляемый узел имеет только левую ветку
     else {
-      return removeVertexWithOnlyLeftShoulder(deleted);
+      return removeVertexWithOnlyLeftShoulder(vertex);
     }
   }
 
-  private static Node removeVertexWithOnlyRightShoulder(final Node deleted) {
-    final Node newVertex = deleted.getRight();
-    deleted.setRight(null);
+  private static Node removeVertexWithOnlyRightShoulder(final Node vertex) {
+    final Node newVertex = vertex.getRight();
+    vertex.setRight(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithOnlyLeftShoulder(final Node deleted) {
-    final Node newVertex = deleted.getLeft();
-    deleted.setLeft(null);
+  private static Node removeVertexWithOnlyLeftShoulder(final Node vertex) {
+    final Node newVertex = vertex.getLeft();
+    vertex.setLeft(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithBothShoulders(final Node deleted) {
-    final Node newVertex = findMostLeft(deleted.getRight());
-    newVertex.setRight(deleted.getRight());
-    newVertex.setLeft(deleted.getLeft());
-    deleted.setLeft(null);
-    deleted.setRight(null);
-    return newVertex;
+  private static Node removeVertexWithBothShoulders(final Node vertex) {
+    final Node node = findMostLeftNode(vertex.getRight());
+    node.setRight(vertex.getRight());
+    node.setLeft(vertex.getLeft());
+    vertex.setLeft(null);
+    vertex.setRight(null);
+    return node;
   }
 
-  private static Node findMostLeft(final Node node) {
-    return null == node.getLeft() ? node : findMostLeft(node.getLeft());
+  private static Node findMostLeftNode(final Node node) {
+    return null == node.getLeft() ? node : findMostLeftNode(node.getLeft());
   }
 
   private static class Node {
