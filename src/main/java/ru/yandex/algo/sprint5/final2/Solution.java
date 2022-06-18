@@ -5,92 +5,47 @@ public class Solution {
     if (null == root) {
       return null;
     }
-    final Pair<Node> pair = findByKey(root, key, new Pair<>());
-    final Node deleted = pair.getDeleted();
-
-    // удаляемый узел не найден
-    if (null == deleted) {
-      return root;
+    if (key < root.getValue()) {
+      final Node vertex = remove(root.getLeft(), key);
+      root.setLeft(vertex);
+    } else if (key > root.getValue()) {
+      final Node vertex = remove(root.getRight(), key);
+      root.setRight(vertex);
+    } else {
+      return removeInner(root);
     }
+    return root;
+  }
 
-    final Node parent = pair.getParent();
-
-    // удаляемый узел - единственный
-    if (null == parent && null == root.getRight() && null == root.getLeft()) {
-      return null;
-    }
-
-    // удаляемый узел - корень
-    if (null == parent) {
-      // удаляемый узел имеет обе ветки
-      if (null != deleted.getLeft() && null != deleted.getRight()) {
-        return removeVertexWithBothShoulders(deleted);
-      }
-      // удаляемый узел имеет только правую ветку
-      else if (null != deleted.getRight()) {
-        final Node newRoot = deleted.getRight();
-        deleted.setRight(null);
-        return newRoot;
-      }
-      // удаляемый узел имеет только левую ветку
-      else {
-        final Node newRoot = deleted.getLeft();
-        deleted.setLeft(null);
-        return newRoot;
-      }
-    }
-
-    final boolean isRightChildren = isRightChildren(deleted, parent);
-    final boolean isLeftChildren = isLeftChildren(deleted, parent);
-
+  private static Node removeInner(Node deleted) {
     // удаляемый узел - лист
     if (null == deleted.getRight() && null == deleted.getLeft()) {
-      if (isRightChildren) {
-        parent.setRight(null);
-        return root;
-      }
-      if (isLeftChildren) {
-        parent.setLeft(null);
-        return root;
-      }
+      return null;
     }
+    // удаляемый узел имеет обе ветки
+    if (null != deleted.getLeft() && null != deleted.getRight()) {
+      return removeVertexWithBothShoulders(deleted);
+    }
+    // удаляемый узел имеет только правую ветку
+    else if (null != deleted.getRight()) {
+      return removeVertexWithOnlyRightShoulder(deleted);
+    }
+    // удаляемый узел имеет только левую ветку
+    else {
+      return removeVertexWithOnlyLeftShoulder(deleted);
+    }
+  }
 
-    // удаляемый узел - правый потомок родителя
-    if (isRightChildren) {
-      // удаляемый узел имеет только левую ветку
-      if (null == deleted.getRight()) {
-        parent.setRight(deleted.getLeft());
-        deleted.setLeft(null);
-        return root;
-      }
-      // удаляемый узел имеет только правую ветку
-      if (null == deleted.getLeft()) {
-        parent.setRight(deleted.getRight());
-        deleted.setRight(null);
-        return root;
-      }
-      final Node newVertex = removeVertexWithBothShoulders(deleted);
-      parent.setRight(newVertex);
-    }
-    // удаляемый узел - левый потомок родителя
-    if (isLeftChildren) {
-      // удаляемый узел имеет только левую ветку
-      if (null == deleted.getRight()) {
-        parent.setLeft(deleted.getLeft());
-        deleted.setLeft(null);
-        return root;
-      }
-      // удаляемый узел имеет только правую ветку
-      if (null == deleted.getLeft()) {
-        parent.setLeft(deleted.getRight());
-        deleted.setRight(null);
-        return root;
-      }
-      final Node newVertex = removeVertexWithBothShoulders(deleted);
-      parent.setLeft(newVertex);
-    }
+  private static Node removeVertexWithOnlyRightShoulder(Node deleted) {
+    final Node newVertex = deleted.getRight();
+    deleted.setRight(null);
+    return newVertex;
+  }
 
-    return root;
+  private static Node removeVertexWithOnlyLeftShoulder(Node deleted) {
+    final Node newVertex = deleted.getLeft();
+    deleted.setLeft(null);
+    return newVertex;
   }
 
   private static Node removeVertexWithBothShoulders(Node deleted) {
@@ -103,56 +58,11 @@ public class Solution {
   }
 
   private static Node findMostLeft(Node node) {
-    while (null != node.getLeft()) {
-      node = node.getLeft();
+    final Node left = node.getLeft();
+    if (null == left) {
+      return node;
     }
-    return node;
-  }
-
-  private static boolean isRightChildren(Node children, Node parent) {
-    return children.equals(parent.getRight());
-  }
-
-  private static boolean isLeftChildren(Node children, Node parent) {
-    return children.equals(parent.getLeft());
-  }
-
-  private static Pair<Node> findByKey(Node vertex, int key, Pair<Node> pair) {
-    while (null != vertex) {
-      if (key == vertex.getValue()) {
-        pair.setDeleted(vertex);
-        return pair;
-      }
-      pair.setParent(vertex);
-      if (key > vertex.getValue()) {
-        vertex = vertex.getRight();
-      } else {
-        vertex = vertex.getLeft();
-      }
-    }
-    return pair;
-  }
-
-  private static class Pair<T> {
-
-    private T deleted;
-    private T parent;
-
-    public T getDeleted() {
-      return deleted;
-    }
-
-    public void setDeleted(T deleted) {
-      this.deleted = deleted;
-    }
-
-    public T getParent() {
-      return parent;
-    }
-
-    public void setParent(T parent) {
-      this.parent = parent;
-    }
+    return findMostLeft(left);
   }
 
   private static class Node {
