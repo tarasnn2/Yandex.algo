@@ -1,5 +1,12 @@
 package ru.yandex.algo.sprint5.final2;
+// 69022105
 
+/**
+ * Удаление в худшем случае работает за O(H), где H - высота дерева. Памяти в худшем случае требуется O(H) для рекурсивного обхода по высоте
+ *
+ * <p>Рекурсивно находим удаляемый узел. В случае успеха, рекурсивно берем из его левой ветки самый правый элемент - это новая вершина. Если
+ * есть только правая ветка - берем самый первый элемент из нее.
+ */
 public class Solution {
   public static Node remove(final Node root, final int key) {
     if (null == root) {
@@ -22,43 +29,38 @@ public class Solution {
     if (null == vertex.getRight() && null == vertex.getLeft()) {
       return null;
     }
-    // удаляемый узел имеет обе ветки
-    if (null != vertex.getLeft() && null != vertex.getRight()) {
-      return removeVertexWithBothShoulders(vertex);
+    // удаляемый узел имеет обе ветки или только левую
+    if (null != vertex.getLeft()) {
+      return removeVertexWithShoulders(vertex);
     }
     // удаляемый узел имеет только правую ветку
-    else if (null != vertex.getRight()) {
-      return removeVertexWithOnlyRightShoulder(vertex);
-    }
-    // удаляемый узел имеет только левую ветку
-    else {
-      return removeVertexWithOnlyLeftShoulder(vertex);
-    }
-  }
-
-  private static Node removeVertexWithOnlyRightShoulder(final Node vertex) {
     final Node newVertex = vertex.getRight();
     vertex.setRight(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithOnlyLeftShoulder(final Node vertex) {
-    final Node newVertex = vertex.getLeft();
-    vertex.setLeft(null);
+  private static Node removeVertexWithShoulders(final Node vertexForRemove) {
+    final Node newVertex = getAndDetachMostRightNode(vertexForRemove.getLeft(), null);
+    if (!newVertex.equals(vertexForRemove.getRight())) {
+      newVertex.setRight(vertexForRemove.getRight());
+    }
+    if (!newVertex.equals(vertexForRemove.getLeft())) {
+      newVertex.setLeft(vertexForRemove.getLeft());
+    }
+    vertexForRemove.setLeft(null);
+    vertexForRemove.setRight(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithBothShoulders(final Node vertex) {
-    final Node node = findMostLeftNode(vertex.getRight());
-    node.setRight(vertex.getRight());
-    node.setLeft(vertex.getLeft());
-    vertex.setLeft(null);
-    vertex.setRight(null);
-    return node;
-  }
-
-  private static Node findMostLeftNode(final Node node) {
-    return null == node.getLeft() ? node : findMostLeftNode(node.getLeft());
+  private static Node getAndDetachMostRightNode(Node vertex, Node parent) {
+    final Node right = vertex.getRight();
+    if (null == right) {
+      if (null != parent) {
+        parent.setRight(null);
+      }
+      return vertex;
+    }
+    return getAndDetachMostRightNode(right, vertex);
   }
 
   private static class Node {
@@ -125,7 +127,26 @@ public class Solution {
       Node newHead = remove(node1, 2);
       assert newHead.getValue() == 4;
       assert newHead.getRight().equals(node3);
-      assert newHead.getLeft().equals(node5);
+      assert newHead.getLeft().equals(node4);
+    }
+    // 2
+    {
+      Node node4 = new Node(null, null, 11);
+      Node node10 = new Node(null, null, 99);
+      Node node9 = new Node(null, null, 72);
+      Node node7 = new Node(null, null, 50);
+      Node node6 = new Node(null, null, 32);
+      Node node5 = new Node(null, node6, 29);
+      Node node8 = new Node(node9, node10, 91);
+      Node node2 = new Node(node4, node5, 20);
+      Node node3 = new Node(node7, node8, 65);
+      Node node1 = new Node(node2, node3, 41);
+
+      Node newHead = remove(node1, 41);
+      assert newHead.getValue() == 32;
+      assert newHead.getLeft().equals(node2);
+      assert newHead.getRight().equals(node3);
+      assert node5.getRight() == null;
     }
   }
 
