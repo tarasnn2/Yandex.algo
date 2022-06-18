@@ -1,7 +1,7 @@
 package ru.yandex.algo.sprint5.final2;
 
 public class Solution {
-  public static Node remove(Node root, int key) {
+  public static Node remove(final Node root, final int key) {
     if (null == root) {
       return null;
     }
@@ -17,7 +17,7 @@ public class Solution {
     return root;
   }
 
-  private static Node removeInner(Node deleted) {
+  private static Node removeInner(final Node deleted) {
     // удаляемый узел - лист
     if (null == deleted.getRight() && null == deleted.getLeft()) {
       return null;
@@ -36,19 +36,19 @@ public class Solution {
     }
   }
 
-  private static Node removeVertexWithOnlyRightShoulder(Node deleted) {
+  private static Node removeVertexWithOnlyRightShoulder(final Node deleted) {
     final Node newVertex = deleted.getRight();
     deleted.setRight(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithOnlyLeftShoulder(Node deleted) {
+  private static Node removeVertexWithOnlyLeftShoulder(final Node deleted) {
     final Node newVertex = deleted.getLeft();
     deleted.setLeft(null);
     return newVertex;
   }
 
-  private static Node removeVertexWithBothShoulders(Node deleted) {
+  private static Node removeVertexWithBothShoulders(final Node deleted) {
     final Node newVertex = findMostLeft(deleted.getRight());
     newVertex.setRight(deleted.getRight());
     newVertex.setLeft(deleted.getLeft());
@@ -57,12 +57,8 @@ public class Solution {
     return newVertex;
   }
 
-  private static Node findMostLeft(Node node) {
-    final Node left = node.getLeft();
-    if (null == left) {
-      return node;
-    }
-    return findMostLeft(left);
+  private static Node findMostLeft(final Node node) {
+    return null == node.getLeft() ? node : findMostLeft(node.getLeft());
   }
 
   private static class Node {
