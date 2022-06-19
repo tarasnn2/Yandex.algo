@@ -1,4 +1,5 @@
-//68858920
+package ru.yandex.algo.sprint5.final1;
+// 69040827
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ public class HeapSort {
   private static final String SEPARATOR = " ";
   private static final String DELIMITER = "\n";
   private static final String FILE = "input.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint5/final1/input00.txt";
 
   public static void main(String[] args) throws IOException {
     final Participant[] participants = getParticipants();
@@ -52,8 +54,13 @@ public class HeapSort {
   }
 }
 
+// private static class - не компилится
 class Participant implements Comparable<Participant> {
-  Participant(String name, int score, int penalty) {
+  private final String name;
+  private final int score;
+  private final int penalty;
+
+  public Participant(String name, int score, int penalty) {
     this.name = name;
     this.score = score;
     this.penalty = penalty;
@@ -63,10 +70,6 @@ class Participant implements Comparable<Participant> {
   public String toString() {
     return name;
   }
-
-  private final String name;
-  private final int score;
-  private final int penalty;
 
   public String getName() {
     return name;
@@ -107,11 +110,11 @@ class MaxHeap<T extends Comparable<T>> {
   private int size = 0;
 
   T pop() {
-    final T result = getElement(0);
-    heap[0] = heap[size];
+    final T result = getElement(1);
+    heap[1] = heap[size];
     heap[size] = null;
     size--;
-    siftDown(0);
+    siftDown(1);
     return result;
   }
 
@@ -126,58 +129,33 @@ class MaxHeap<T extends Comparable<T>> {
     return (T) heap[idx];
   }
 
-  private int siftDown(int idx) {
-    final int idxLeftSibling = getIdxLeftSibling(idx);
-    final int idxRightSibling = getIdxRightSibling(idx);
-    if (idxLeftSibling == -1 && idxRightSibling == -1) {
-      return idx;
-    }
-    final T vertexValue = getElement(idx);
-    if (idxLeftSibling != -1 && idxRightSibling != -1) {
-      final int idxPriority = getIdxPriority(idxLeftSibling, idxRightSibling);
-      final T idxPriorityValue = getElement(idxPriority);
-      if (null == idxPriorityValue) {
-        return idx;
+  private void siftDown(int index) {
+    while (true) {
+      final int leftIndex = index * 2;
+      final int rightIndex = index * 2 + 1;
+      if (leftIndex > size) {
+        break;
       }
-      if (idxPriorityValue.compareTo(vertexValue) > -1) {
-        swap(idxPriority, idx);
-        return siftDown(idxPriority);
-      } else {
-        return idx;
+      final int maxChildIndex =
+          (rightIndex <= size && getElement(rightIndex).compareTo(getElement(leftIndex)) > -1) ? rightIndex : leftIndex;
+      if (getElement(index).compareTo(getElement(maxChildIndex)) > -1) {
+        break;
       }
-    } else if (idxLeftSibling != -1 && getElement(idxLeftSibling).compareTo(vertexValue) > -1) {
-      swap(idxLeftSibling, idx);
-      return siftDown(idxLeftSibling);
-    } else if (idxRightSibling != -1 && getElement(idxRightSibling).compareTo(vertexValue) > -1) {
-      swap(idxRightSibling, idx);
-      return siftDown(idxRightSibling);
+      swap(index, maxChildIndex);
+      index = maxChildIndex;
     }
-    return idx;
   }
 
-  private int getIdxPriority(int idxLeftSibling, int idxRightSibling) {
-    final T leftSiblingValue = getElement(idxLeftSibling);
-    if (null == leftSiblingValue) {
-      return idxRightSibling;
-    }
-    final T rightSiblingValue = getElement(idxRightSibling);
-    if (null == rightSiblingValue) {
-      return idxLeftSibling;
-    }
-    return leftSiblingValue.compareTo(rightSiblingValue) > -1 ? idxLeftSibling : idxRightSibling;
-  }
-
-  private int siftUp(int idx) {
+  private void siftUp(int idx) {
     final int idxParent = getIdxParent(idx);
     if (idxParent == -1) {
-      return idx;
+      return;
     }
     final T vertexValue = getElement(idx);
     if (vertexValue.compareTo(getElement(idxParent)) > -1) {
       swap(idxParent, idx);
-      return siftUp(idxParent);
+      siftUp(idxParent);
     }
-    return idx;
   }
 
   private void swap(int idx1, int idx2) {
@@ -187,20 +165,10 @@ class MaxHeap<T extends Comparable<T>> {
   }
 
   private int getIdxParent(int idxChildren) {
-    if (idxChildren == 0) {
+    if (idxChildren == 1) {
       return -1;
     }
     final int index = idxChildren / 2;
     return (index >= heap.length || index == -1) ? -1 : index;
-  }
-
-  private int getIdxLeftSibling(int idxVertex) {
-    final int index = idxVertex * 2;
-    return index >= heap.length ? -1 : index;
-  }
-
-  private int getIdxRightSibling(int idxVertex) {
-    final int index = (idxVertex * 2) + 1;
-    return index >= heap.length ? -1 : index;
   }
 }

@@ -31,7 +31,7 @@ public class Solution {
     }
     // удаляемый узел имеет обе ветки или только левую
     if (null != vertex.getLeft()) {
-      return removeVertexWithShoulders(vertex);
+      return removeVertexWithEdges(vertex);
     }
     // удаляемый узел имеет только правую ветку
     final Node newVertex = vertex.getRight();
@@ -39,7 +39,7 @@ public class Solution {
     return newVertex;
   }
 
-  private static Node removeVertexWithShoulders(final Node vertexForRemove) {
+  private static Node removeVertexWithEdges(final Node vertexForRemove) {
     final Node newVertex = getAndDetachMostRightNode(vertexForRemove.getLeft(), null);
     if (!newVertex.equals(vertexForRemove.getRight())) {
       newVertex.setRight(vertexForRemove.getRight());
@@ -52,7 +52,7 @@ public class Solution {
     return newVertex;
   }
 
-  private static Node getAndDetachMostRightNode(Node vertex, Node parent) {
+  private static Node getAndDetachMostRightNode(final Node vertex, final Node parent) {
     final Node right = vertex.getRight();
     if (null == right) {
       if (null != parent) {
