@@ -18,8 +18,9 @@ import java.util.TreeMap;
 
 public class H {
   private static final String SEPARATOR = " ";
-  //private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/h/input00.txt";
+  // private static final String FILE = "input.txt";
+  private static final String FILE =
+      "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/h/input00.txt";
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
@@ -27,18 +28,25 @@ public class H {
     final int edgeCount;
 
     try (final BufferedReader in =
-        new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
+        new BufferedReader(
+            new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
       final String[] firstLine = in.readLine().split(SEPARATOR);
       vertexCount = Integer.parseInt(firstLine[0]);
       edgeCount = Integer.parseInt(firstLine[1]);
-      graph = buildGraph(vertexCount, edgeCount, in, (o1, o2) -> Integer.compare(o2.getW().getNumber(), o1.getW().getNumber()));
+      graph =
+          buildGraph(
+              vertexCount,
+              edgeCount,
+              in,
+              (o1, o2) -> Integer.compare(o2.getW().getNumber(), o1.getW().getNumber()));
     }
     final Vertex startVertex = new Vertex(1);
     final StringBuilder sb = traversByDFS(graph, startVertex, vertexCount);
     System.out.print(sb);
   }
 
-  private static StringBuilder traversByDFS(final Graph graph, final Vertex startVertex, final int vertexCount) {
+  private static StringBuilder traversByDFS(
+      final Graph graph, final Vertex startVertex, final int vertexCount) {
     final TimePairs timePairs = new TimePairs(vertexCount);
     final Deque<Vertex> stack = new LinkedList<>();
     final Colors colors = new Colors(vertexCount);
@@ -53,7 +61,7 @@ public class H {
         stack.push(vertex);
         final Queue<Edge> edges = graph.getEdges(vertex);
         // final Queue<Edge> edgesCopy = new PriorityQueue<>(edges);
-        while (!edges.isEmpty()) {
+        while (null != edges && !edges.isEmpty()) {
           final Edge edge = edges.poll();
           final Vertex w = edge.getW();
           if (colors.isWhite(w)) {
@@ -68,7 +76,8 @@ public class H {
     return timePairs.toStringBuilder();
   }
 
-  private static Graph buildGraph(final int vertexCount, final int edgeCount, BufferedReader in, Comparator<Edge> traversDirect)
+  private static Graph buildGraph(
+      final int vertexCount, final int edgeCount, BufferedReader in, Comparator<Edge> traversDirect)
       throws IOException {
     final Graph graph = new Graph(vertexCount, traversDirect);
     for (int i = 0; i < edgeCount; i++) {
@@ -123,9 +132,7 @@ class Graph {
   }
 
   Queue<Edge> getEdges(Vertex key) {
-    final Queue<Edge> edges = store.getOrDefault(key, new PriorityQueue<>());
-    store.putIfAbsent(key, edges);
-    return edges;
+    return store.get(key);
   }
 }
 
@@ -244,7 +251,8 @@ class TimePairs {
 
   public StringBuilder toStringBuilder() {
     final StringBuilder sb = new StringBuilder(store.size() * 4);
-    final TreeMap<Vertex, TimePair> treeMap = new TreeMap<>(Comparator.comparingInt(Vertex::getNumber));
+    final TreeMap<Vertex, TimePair> treeMap =
+        new TreeMap<>(Comparator.comparingInt(Vertex::getNumber));
     treeMap.putAll(store);
     for (Map.Entry<Vertex, TimePair> entry : treeMap.entrySet()) {
       sb.append(entry.getValue().toStringBuilder()).append("\n");
