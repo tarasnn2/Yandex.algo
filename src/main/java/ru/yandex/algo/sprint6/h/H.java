@@ -8,19 +8,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.TreeMap;
 
 public class H {
   private static final String SEPARATOR = " ";
   // private static final String FILE = "input.txt";
   private static final String FILE =
       "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/h/input00.txt";
+
+  private static int time = -1;
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
@@ -35,17 +33,43 @@ public class H {
       edgeCount = Integer.parseInt(firstLine[1]);
       graph =
           buildGraph(
-              vertexCount,
-              edgeCount,
-              in,
-              (o1, o2) -> Integer.compare(o2.getW().getNumber(), o1.getW().getNumber()));
+              vertexCount, edgeCount, in, Comparator.comparingInt(o -> o.getW().getNumber()));
     }
     final Vertex startVertex = new Vertex(1);
-    final StringBuilder sb = traversByDFS(graph, startVertex, vertexCount);
+    final StringBuilder sb = callRecursiveDFS(graph, startVertex, vertexCount);
+    //final StringBuilder sb = stackDFS(graph, startVertex, vertexCount);
     System.out.print(sb);
   }
 
-  private static StringBuilder traversByDFS(
+  private static void recursiveDFS(
+      final Graph graph, final Vertex vertexV, Colors colors, TimePairs timePairs) {
+
+    ++time;
+    colors.markColor(vertexV, Color.GRAY);
+    timePairs.addTimeIn(vertexV, time);
+
+    final Queue<Edge> edges = graph.getEdges(vertexV);
+    while (null != edges && !edges.isEmpty()) {
+      final Vertex vertexW = edges.poll().getW();
+      if (colors.isWhite(vertexW)) {
+        recursiveDFS(graph, vertexW, colors, timePairs);
+      }
+    }
+    ++time;
+    timePairs.addTimeOut(vertexV, time);
+    colors.markColor(vertexV, Color.BLACK);
+  }
+
+  private static StringBuilder callRecursiveDFS(
+      final Graph graph, final Vertex startVertex, final int vertexCount) {
+
+    final TimePairs timePairs = new TimePairs(vertexCount);
+    final Colors colors = new Colors(vertexCount);
+    recursiveDFS(graph, startVertex, colors, timePairs);
+    return timePairs.toStringBuilder();
+  }
+
+  private static StringBuilder stackDFS(
       final Graph graph, final Vertex startVertex, final int vertexCount) {
     final TimePairs timePairs = new TimePairs(vertexCount);
     final Deque<Vertex> stack = new LinkedList<>();
@@ -116,23 +140,28 @@ class Colors {
 
 class Graph {
 
-  private final Map<Vertex, Queue<Edge>> store;
+  private final Object[] store;
 
   private final Comparator<Edge> traversDirect;
 
   public Graph(int capacity, Comparator<Edge> traversDirect) {
     this.traversDirect = traversDirect;
-    store = new HashMap<>(capacity);
+    store = new Object[capacity];
   }
 
   void addEdgeToVertex(Vertex key, Edge value) {
-    final Queue<Edge> edges = store.getOrDefault(key, new PriorityQueue<>(traversDirect));
+    Queue<Edge> edges = getEdges(key);
+    if (null == edges) {
+      edges = new PriorityQueue<>(traversDirect);
+      store[key.getNumber() - 1] = edges;
+    }
     edges.add(value);
-    store.putIfAbsent(key, edges);
   }
 
-  Queue<Edge> getEdges(Vertex key) {
-    return store.get(key);
+  @SuppressWarnings("unchecked")
+  Queue<Edge> getEdges(Vertex v) {
+    final int i = v.getNumber() - 1;
+    return (Queue<Edge>) store[i];
   }
 }
 
@@ -151,23 +180,6 @@ class Vertex {
   @Override
   public String toString() {
     return number.toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Vertex vertex = (Vertex) o;
-    return number.equals(vertex.number);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(number);
   }
 }
 
@@ -226,22 +238,30 @@ class TimePair {
 }
 
 class TimePairs {
-  private final Map<Vertex, TimePair> store;
+  private final TimePair[] store;
 
   TimePairs(int capacity) {
-    this.store = new HashMap<>(capacity);
+    store = new TimePair[capacity];
   }
 
   void addTimeIn(Vertex v, int t) {
-    final TimePair timePair = store.getOrDefault(v, new TimePair());
+    final int i = v.getNumber() - 1;
+    TimePair timePair = store[i];
+    if (null == timePair) {
+      timePair = new TimePair();
+      store[i] = timePair;
+    }
     timePair.setTimeIn(t);
-    store.putIfAbsent(v, timePair);
   }
 
   void addTimeOut(Vertex v, int t) {
-    final TimePair timePair = store.getOrDefault(v, new TimePair());
+    final int i = v.getNumber() - 1;
+    TimePair timePair = store[i];
+    if (null == timePair) {
+      timePair = new TimePair();
+      store[i] = timePair;
+    }
     timePair.setTimeOut(t);
-    store.putIfAbsent(v, timePair);
   }
 
   @Override
@@ -250,12 +270,9 @@ class TimePairs {
   }
 
   public StringBuilder toStringBuilder() {
-    final StringBuilder sb = new StringBuilder(store.size() * 4);
-    final TreeMap<Vertex, TimePair> treeMap =
-        new TreeMap<>(Comparator.comparingInt(Vertex::getNumber));
-    treeMap.putAll(store);
-    for (Map.Entry<Vertex, TimePair> entry : treeMap.entrySet()) {
-      sb.append(entry.getValue().toStringBuilder()).append("\n");
+    final StringBuilder sb = new StringBuilder(store.length * 4);
+    for (TimePair timePair : store) {
+      sb.append(timePair).append("\n");
     }
     return sb;
   }
