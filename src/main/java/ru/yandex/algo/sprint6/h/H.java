@@ -33,11 +33,15 @@ public class H {
       edgeCount = Integer.parseInt(firstLine[1]);
       graph =
           buildGraph(
-              vertexCount, edgeCount, in, Comparator.comparingInt(o -> o.getW().getNumber()));
+              vertexCount,
+              edgeCount,
+              in,
+              // (o1, o2) -> Integer.compare(o2.getW().getNumber(), o1.getW().getNumber()));
+              Comparator.comparingInt(o -> o.getW().getNumber()));
     }
     final Vertex startVertex = new Vertex(1);
     final StringBuilder sb = callRecursiveDFS(graph, startVertex, vertexCount);
-    //final StringBuilder sb = stackDFS(graph, startVertex, vertexCount);
+    // final StringBuilder sb = stackDFS(graph, startVertex, vertexCount); // don't accept by TL https://contest.yandex.ru/contest/25069/run-report/69194146/
     System.out.print(sb);
   }
 
