@@ -6,17 +6,20 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
 
+/**
+ * Взять первую вершину v, покрасить ее в серый. Взять ребро из B, по нему дойти рекурсией до конца глубины, крася все в серый. На выходе из
+ * рекурсии все покрасить в черный. Взять ребро из R, по нему дойти рекурсией до конца глубины, проверяя, не попадается ли черный цвет если
+ * попался - NO
+ */
 public class Railways {
 
   private static final String SEPARATOR = " ";
   //private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input15.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input02.txt";
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
@@ -28,55 +31,46 @@ public class Railways {
       vertexCount = Integer.parseInt(firstLine[0]);
       graph = buildGraphs(vertexCount, in);
     }
-    if (isMapOptimal(graph)) {
+    if (isMapOptimal(graph, vertexCount)) {
       System.out.print("YES");
     } else {
       System.out.print("NO");
     }
   }
 
-  private static void buildPaths(Graph graph, Vertex vertexA, Vertex vertexB, RailwayPaths railWayPaths, EdgeType edgeType) {
-    final Queue<Edge> edges = graph.getEdges(vertexB, edgeType);
+  private static void recursiveDFS(Graph graph, Vertex vertexV, Colors colors, EdgeType type) {
+    if (!colors.isBlackR(vertexV) && !colors.isBlackB(vertexV)) {
+      colors.markColor(vertexV, Color.GRAY);
+    }
+    final Queue<Edge> edges = graph.getEdges(vertexV, type);
+    final Color colorType = type == EdgeType.B ? Color.BLACK_B : Color.BLACK_R;
     while (null != edges && !edges.isEmpty()) {
       final Vertex vertexW = edges.poll().getW();
-      buildPaths(graph, vertexA, vertexW, railWayPaths, edgeType);
+      if (colorType == Color.BLACK_B && colors.isBlackR(vertexW) || colorType == Color.BLACK_R && colors.isBlackB(vertexW)) {
+        final String s = "The map isn't optimal: " + vertexV + " " + vertexW + " " + type;
+        System.out.println(s);
+        throw new NoOptimalMap(s);
+      }
+      if (colors.isWhite(vertexW)) {
+        recursiveDFS(graph, vertexW, colors, type);
+      }
     }
-    if (vertexB.getNumber() > vertexA.getNumber()) {
-      final RailWayPath railWayPath = new RailWayPath(vertexA, vertexB);
-      railWayPaths.addPath(railWayPath);
-    }
+    colors.markColor(vertexV, colorType);
   }
 
-  private static void checkMap(Graph graph, Vertex vertexA, Vertex vertexB, RailwayPaths railWayPaths, EdgeType edgeType) {
-    final Queue<Edge> edges = graph.getEdges(vertexB, edgeType);
-    while (null != edges && !edges.isEmpty()) {
-      final Vertex vertexW = edges.poll().getW();
-      checkMap(graph, vertexA, vertexW, railWayPaths, edgeType);
-    }
-
-    //System.out.println(vertexA + " " + vertexB);
-    if (vertexB.getNumber() > vertexA.getNumber() && railWayPaths.isContainsPath(vertexA, vertexB)) {
-      final String s = "The map isn't optimal: " + vertexA + " " + vertexB;
-      //System.out.println(s);
-      throw new NoOptimalMap(s);
-    }
-  }
-
-  private static boolean isMapOptimal(final Graph graph) {
-    final RailwayPaths railWayPaths = new RailwayPaths();
+  private static boolean isMapOptimal(final Graph graph, int vertexCount) {
     Vertex startVertex = graph.getFirstVertex(EdgeType.B);
     if (null == startVertex) {
       return true;
     }
-    buildPaths(graph, startVertex, startVertex, railWayPaths, EdgeType.B);
-    //System.out.println(railWayPaths);
-
+    final Colors colors = new Colors(vertexCount);
+    recursiveDFS(graph, startVertex, colors, EdgeType.B);
     try {
       startVertex = graph.getFirstVertex(EdgeType.R);
       if (null == startVertex) {
         return true;
       }
-      checkMap(graph, startVertex, startVertex, railWayPaths, EdgeType.R);
+      recursiveDFS(graph, startVertex, colors, EdgeType.R);
       return true;
     } catch (NoOptimalMap e) {
       return false;
@@ -102,6 +96,42 @@ public class Railways {
     }
   }
 
+}
+
+class Colors {
+
+  private final Color[] color;
+
+  public Colors(int capacity) {
+    color = new Color[capacity];
+  }
+
+  void markColor(Vertex v, Color c) {
+    color[v.getNumber() - 1] = c;
+  }
+
+  boolean isWhite(Vertex v) {
+    return color[v.getNumber() - 1] == null || color[v.getNumber() - 1] == Color.WHILE;
+  }
+
+  boolean isGray(Vertex v) {
+    return color[v.getNumber() - 1] == Color.GRAY;
+  }
+
+  boolean isBlackR(Vertex v) {
+    return color[v.getNumber() - 1] == Color.BLACK_R;
+  }
+
+  boolean isBlackB(Vertex v) {
+    return color[v.getNumber() - 1] == Color.BLACK_B;
+  }
+}
+
+enum Color {
+  WHILE,
+  GRAY,
+  BLACK_R,
+  BLACK_B;
 }
 
 class Graph {
@@ -269,70 +299,4 @@ enum EdgeType {
     }
     throw new UnsupportedOperationException("Value doesn't support: " + text);
   }
-}
-
-class RailWayPath {
-
-  private final Vertex a;
-  private final Vertex b;
-
-  public RailWayPath(Vertex a, Vertex b) {
-    this.a = a;
-    this.b = b;
-  }
-
-  public Vertex getA() {
-    return a;
-  }
-
-  public Vertex getB() {
-    return b;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    RailWayPath railWayPath = (RailWayPath) o;
-    return a.equals(railWayPath.a) && b.equals(railWayPath.b);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(a, b);
-  }
-
-  @Override
-  public String toString() {
-    return "a=" + a + ", b=" + b;
-  }
-}
-
-class RailwayPaths {
-
-  private final Set<RailWayPath> paths;
-
-  public RailwayPaths() {
-    paths = new HashSet<>();
-  }
-
-  void addPath(RailWayPath p) {
-    paths.add(p);
-  }
-
-  boolean isContainsPath(Vertex a, Vertex b) {
-    return paths.contains(new RailWayPath(a, b));
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    paths.forEach(railWayPath -> sb.append(railWayPath).append("\n"));
-    return sb.toString();
-  }
-
 }
