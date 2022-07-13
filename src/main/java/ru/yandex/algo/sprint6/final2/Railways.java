@@ -10,16 +10,11 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-/**
- * Взять первую вершину v, покрасить ее в серый. Взять ребро из B, по нему дойти рекурсией до конца глубины, крася все в серый. На выходе из
- * рекурсии все покрасить в черный. Взять ребро из R, по нему дойти рекурсией до конца глубины, проверяя, не попадается ли черный цвет если
- * попался - NO
- */
 public class Railways {
 
   private static final String SEPARATOR = " ";
   //private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input02.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input15.txt";
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
@@ -38,39 +33,28 @@ public class Railways {
     }
   }
 
-  private static void recursiveDFS(Graph graph, Vertex vertexV, Colors colors, EdgeType type) {
-    if (!colors.isBlackR(vertexV) && !colors.isBlackB(vertexV)) {
-      colors.markColor(vertexV, Color.GRAY);
-    }
-    final Queue<Edge> edges = graph.getEdges(vertexV, type);
-    final Color colorType = type == EdgeType.B ? Color.BLACK_B : Color.BLACK_R;
+  private static void recursiveDFS(Graph graph, Vertex vertexV, Colors colors) {
+    colors.markColor(vertexV, Color.GRAY);
+    final Queue<Edge> edges = graph.getEdges(vertexV);
     while (null != edges && !edges.isEmpty()) {
       final Vertex vertexW = edges.poll().getW();
-      if (colorType == Color.BLACK_B && colors.isBlackR(vertexW) || colorType == Color.BLACK_R && colors.isBlackB(vertexW)) {
-        final String s = "The map isn't optimal: " + vertexV + " " + vertexW + " " + type;
-        System.out.println(s);
-        throw new NoOptimalMap(s);
-      }
-      if (colors.isWhite(vertexW)) {
-        recursiveDFS(graph, vertexW, colors, type);
+      if (colors.isGray(vertexW)) {
+        throw new NoOptimalMap("The map isn't optimal: " + vertexW);
+      } else if (colors.isWhite(vertexW)) {
+        recursiveDFS(graph, vertexW, colors);
       }
     }
-    colors.markColor(vertexV, colorType);
+    colors.markColor(vertexV, Color.BLACK);
   }
 
   private static boolean isMapOptimal(final Graph graph, int vertexCount) {
-    Vertex startVertex = graph.getFirstVertex(EdgeType.B);
-    if (null == startVertex) {
-      return true;
-    }
     final Colors colors = new Colors(vertexCount);
-    recursiveDFS(graph, startVertex, colors, EdgeType.B);
+    Vertex startVertex = graph.getVertexByNumber(colors.getFirstWhiteVertexNumber());
     try {
-      startVertex = graph.getFirstVertex(EdgeType.R);
-      if (null == startVertex) {
-        return true;
+      while (null != startVertex) {
+        recursiveDFS(graph, startVertex, colors);
+        startVertex = graph.getVertexByNumber(colors.getFirstWhiteVertexNumber());
       }
-      recursiveDFS(graph, startVertex, colors, EdgeType.R);
       return true;
     } catch (NoOptimalMap e) {
       return false;
@@ -83,7 +67,13 @@ public class Railways {
       final String[] l = in.readLine().split("");
       for (int j = 1; j <= l.length; j++) {
         final String type = l[j - 1];
-        graph.addEdgeToVertex(new Edge(i, i + j, type));
+        final Edge edge;
+        if ("R".equals(type)) {
+          edge = new Edge(i + j, i);
+        } else {
+          edge = new Edge(i, i + j);
+        }
+        graph.addEdgeToVertex(edge);
       }
     }
     return graph;
@@ -111,27 +101,31 @@ class Colors {
   }
 
   boolean isWhite(Vertex v) {
-    return color[v.getNumber() - 1] == null || color[v.getNumber() - 1] == Color.WHILE;
+    return isWhite(v.getNumber());
+  }
+
+  boolean isWhite(int vertexNumber) {
+    return color[vertexNumber - 1] == null || color[vertexNumber - 1] == Color.WHILE;
   }
 
   boolean isGray(Vertex v) {
     return color[v.getNumber() - 1] == Color.GRAY;
   }
 
-  boolean isBlackR(Vertex v) {
-    return color[v.getNumber() - 1] == Color.BLACK_R;
-  }
-
-  boolean isBlackB(Vertex v) {
-    return color[v.getNumber() - 1] == Color.BLACK_B;
+  int getFirstWhiteVertexNumber() {
+    for (int i = 1; i <= color.length; i++) {
+      if (isWhite(i)) {
+        return i;
+      }
+    }
+    return -1;
   }
 }
 
 enum Color {
   WHILE,
   GRAY,
-  BLACK_R,
-  BLACK_B;
+  BLACK;
 }
 
 class Graph {
@@ -142,77 +136,35 @@ class Graph {
     store = new Object[capacity];
   }
 
-  void addEdgeToVertex(Edge edge) {
-    addEdgeToVertex(edge.getV(), edge);
+  void addEdgeToVertex(Edge value) {
+    addEdgeToVertex(value.getV(), value);
   }
 
-  void addEdgeToVertex(Vertex vertex, Edge edge) {
-    Queue<Edge> edges;
-    if (EdgeType.B == edge.getType()) {
-      edges = getEdgesB(vertex);
-    } else if (EdgeType.R == edge.getType()) {
-      edges = getEdgesR(vertex);
-    } else {
-      throw new IllegalArgumentException(edge.getType().toString());
+  void addEdgeToVertex(Vertex key, Edge value) {
+    Queue<Edge> edges = getEdges(key);
+    if (null == edges) {
+      edges = new LinkedList<>();
+      store[key.getNumber() - 1] = edges;
     }
-    edges.add(edge);
+    edges.add(value);
   }
 
-  private Queue<Edge> getEdgesB(Vertex v) {
-    return getPair(v).getEdgesB();
-  }
-
-  private Queue<Edge> getEdgesR(Vertex v) {
-    return getPair(v).getEdgesR();
-  }
-
-  private Pair getPair(Vertex v) {
+  @SuppressWarnings("unchecked")
+  Queue<Edge> getEdges(Vertex v) {
     final int i = v.getNumber() - 1;
-    Pair pair = (Pair) store[i];
-    if (null == pair) {
-      pair = new Pair();
-      store[i] = pair;
-    }
-    return pair;
+    return (Queue<Edge>) store[i];
   }
 
-  Vertex getFirstVertex(EdgeType type) {
-    for (Object o : store) {
-      if (null != o) {
-        final Pair p = (Pair) o;
-        if (EdgeType.B == type && !p.getEdgesB().isEmpty()) {
-          return p.getEdgesB().peek().getV();
-        }
-        if (EdgeType.R == type && !p.getEdgesR().isEmpty()) {
-          return p.getEdgesR().peek().getV();
-        }
-      }
+  @SuppressWarnings("unchecked")
+  Vertex getVertexByNumber(int vertexNumber) {
+    if (0 > vertexNumber) {
+      return null;
     }
-    return null;
-  }
-
-  Queue<Edge> getEdges(Vertex v, EdgeType type) {
-    if (type == EdgeType.B) {
-      return getEdgesB(v);
-    } else if (type == EdgeType.R) {
-      return getEdgesR(v);
-    } else {
-      throw new IllegalArgumentException(type.toString());
+    final Object o = store[vertexNumber - 1];
+    if (Objects.isNull(o)) {
+      return null;
     }
-  }
-
-  private static class Pair {
-
-    Queue<Edge> edgesR = new LinkedList<>();
-    Queue<Edge> edgesB = new LinkedList<>();
-
-    public Queue<Edge> getEdgesR() {
-      return edgesR;
-    }
-
-    public Queue<Edge> getEdgesB() {
-      return edgesB;
-    }
+    return ((Queue<Edge>) o).peek().getV();
   }
 }
 
@@ -233,38 +185,20 @@ class Vertex {
     return number + "";
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Vertex vertex = (Vertex) o;
-    return number == vertex.number;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(number);
-  }
 }
 
 class Edge {
 
   private final Vertex v;
   private final Vertex w;
-  private final EdgeType type;
 
-  public Edge(Vertex v, Vertex w, EdgeType type) {
+  public Edge(Vertex v, Vertex w) {
     this.v = v;
     this.w = w;
-    this.type = type;
   }
 
-  public Edge(int v, int w, String type) {
-    this(new Vertex(v), new Vertex(w), EdgeType.fromString(type));
+  public Edge(int v, int w) {
+    this(new Vertex(v), new Vertex(w));
   }
 
   public Vertex getV() {
@@ -273,30 +207,5 @@ class Edge {
 
   public Vertex getW() {
     return w;
-  }
-
-  public EdgeType getType() {
-    return type;
-  }
-}
-
-enum EdgeType {
-
-  R("R"),
-  B("B");
-
-  private final String label;
-
-  EdgeType(String label) {
-    this.label = label;
-  }
-
-  static EdgeType fromString(String text) {
-    for (EdgeType e : EdgeType.values()) {
-      if (e.label.equals(text)) {
-        return e;
-      }
-    }
-    throw new UnsupportedOperationException("Value doesn't support: " + text);
   }
 }
