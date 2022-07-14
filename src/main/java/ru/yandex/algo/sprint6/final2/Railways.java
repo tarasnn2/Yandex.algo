@@ -6,9 +6,15 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
+/**
+ * Ищем цикличность в графе через dfs. Если цикличность есть - карта не оптимальная.
+ * <p>Сложность по памяти O(2v+e)
+ * <p>Сложность по вычислению O(v + e)
+ * <p>где v - кол-во вершин, e - кол-во ребер
+ */
 public class Railways {
 
   private static final String R = "R";
@@ -22,7 +28,7 @@ public class Railways {
 
       final int vertexCount = Integer.parseInt(in.readLine());
       final Graph graph = buildGraphs(vertexCount, in);
-      if (isMapOptimal(graph, vertexCount)) {
+      if (isMapOptimal(graph)) {
         System.out.print("YES");
       } else {
         System.out.print("NO");
@@ -31,47 +37,45 @@ public class Railways {
 
   }
 
-  private static void recursiveDFS(Graph graph, int vertexV, Colors colors) {
+  private static void recursiveDFS(int vertexV, Graph graph, Colors colors) {
     colors.markColor(vertexV, Colors.GRAY);
-    final Queue<Edge> edges = graph.getEdges(vertexV);
+    final Queue<Integer> edges = graph.getWs(vertexV);
     while (null != edges && !edges.isEmpty()) {
-      final int vertexW = edges.poll().getW();
+      final int vertexW = edges.poll();
       if (colors.isGray(vertexW)) {
         throw new NoOptimalMap("The map isn't optimal: " + vertexW);
       } else if (colors.isWhite(vertexW)) {
-        recursiveDFS(graph, vertexW, colors);
+        recursiveDFS(vertexW, graph, colors);
       }
     }
     colors.markColor(vertexV, Colors.BLACK);
   }
 
-  private static boolean isMapOptimal(final Graph graph, int vertexCount) {
-    final Colors colors = new Colors(vertexCount);
-    int startVertex = colors.getFirstWhiteVertex();
+  private static boolean isMapOptimal(Graph graph) {
+    final Colors colors = new Colors(graph.getVertexCount());
+    int startVertex = colors.getNextWhiteVertex(1);
     while (-1 != startVertex) {
       try {
-        recursiveDFS(graph, startVertex, colors);
+        recursiveDFS(startVertex, graph, colors);
       } catch (NoOptimalMap e) {
         return false;
       }
-      startVertex = colors.getFirstWhiteVertex();
+      startVertex = colors.getNextWhiteVertex(startVertex + 1);
     }
     return true;
   }
 
   private static Graph buildGraphs(int intCount, BufferedReader in) throws IOException {
     final Graph graph = new Graph(intCount);
-    for (int i = 1; i < intCount; i++) {
+    for (int v = 1; v < intCount; v++) {
       final String[] l = in.readLine().split("");
       for (int j = 1; j <= l.length; j++) {
         final String type = l[j - 1];
-        final Edge edge;
         if (R.equals(type)) {
-          edge = new Edge(i + j, i);
+          graph.addWToV(v + j, v);
         } else {
-          edge = new Edge(i, i + j);
+          graph.addWToV(v, v + j);
         }
-        graph.addEdgeToVertex(edge);
       }
     }
     return graph;
@@ -109,8 +113,8 @@ class Colors {
     return color[v - 1] == GRAY;
   }
 
-  int getFirstWhiteVertex() {
-    for (int i = 1; i <= color.length; i++) {
+  int getNextWhiteVertex(int start) {
+    for (int i = start; i <= color.length; i++) {
       if (isWhite(i)) {
         return i;
       }
@@ -121,44 +125,30 @@ class Colors {
 
 class Graph {
 
-  private final Queue<Edge>[] store;
+  private final int vertexCount;
+  private final Queue<Integer>[] store;
 
   @SuppressWarnings("unchecked")
   public Graph(int capacity) {
-    store = new LinkedList[capacity];
+    store = new ArrayDeque[capacity];
+    this.vertexCount = capacity;
   }
 
-  void addEdgeToVertex(Edge edge) {
-    final int v = edge.getV();
-    Queue<Edge> edges = getEdges(v);
+  void addWToV(int v, int w) {
+    Queue<Integer> edges = getWs(v);
     if (null == edges) {
-      edges = new LinkedList<>();
+      edges = new ArrayDeque<>();
       store[v - 1] = edges;
     }
-    edges.add(edge);
+    edges.add(w);
   }
 
-  Queue<Edge> getEdges(int v) {
+  Queue<Integer> getWs(int v) {
     final int i = v - 1;
     return store[i];
   }
-}
 
-class Edge {
-
-  private final int v;
-  private final int w;
-
-  public Edge(int v, int w) {
-    this.v = v;
-    this.w = w;
-  }
-
-  public int getV() {
-    return v;
-  }
-
-  public int getW() {
-    return w;
+  public int getVertexCount() {
+    return vertexCount;
   }
 }

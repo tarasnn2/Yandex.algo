@@ -1,4 +1,4 @@
-//package ru.yandex.algo.sprint6.final2;
+package ru.yandex.algo.sprint6.final2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
