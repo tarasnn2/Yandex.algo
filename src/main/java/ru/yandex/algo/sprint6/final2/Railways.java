@@ -12,7 +12,6 @@ import java.util.Queue;
 
 public class Railways {
 
-  private static final String SEPARATOR = " ";
   //private static final String FILE = "input.txt";
   private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input15.txt";
 
@@ -22,8 +21,7 @@ public class Railways {
     try (final BufferedReader in = new BufferedReader(
         new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
 
-      final String[] firstLine = in.readLine().split(SEPARATOR);
-      vertexCount = Integer.parseInt(firstLine[0]);
+      vertexCount = Integer.parseInt(in.readLine());
       graph = buildGraphs(vertexCount, in);
     }
     if (isMapOptimal(graph, vertexCount)) {
@@ -130,41 +128,41 @@ enum Color {
 
 class Graph {
 
-  private final Object[] store;
+  private final Queue<Edge>[] store;
 
+  @SuppressWarnings("unchecked")
   public Graph(int capacity) {
-    store = new Object[capacity];
+    store = new LinkedList[capacity];
   }
 
-  void addEdgeToVertex(Edge value) {
-    addEdgeToVertex(value.getV(), value);
+  void addEdgeToVertex(Edge edge) {
+    addEdgeToVertex(edge.getV(), edge);
   }
 
-  void addEdgeToVertex(Vertex key, Edge value) {
-    Queue<Edge> edges = getEdges(key);
+  void addEdgeToVertex(Vertex v, Edge edge) {
+    Queue<Edge> edges = getEdges(v);
     if (null == edges) {
       edges = new LinkedList<>();
-      store[key.getNumber() - 1] = edges;
+      store[v.getNumber() - 1] = edges;
     }
-    edges.add(value);
+    edges.add(edge);
   }
 
-  @SuppressWarnings("unchecked")
+
   Queue<Edge> getEdges(Vertex v) {
     final int i = v.getNumber() - 1;
-    return (Queue<Edge>) store[i];
+    return store[i];
   }
 
-  @SuppressWarnings("unchecked")
   Vertex getVertexByNumber(int vertexNumber) {
     if (0 > vertexNumber) {
       return null;
     }
-    final Object o = store[vertexNumber - 1];
+    final Queue<Edge> o = store[vertexNumber - 1];
     if (Objects.isNull(o)) {
       return null;
     }
-    return ((Queue<Edge>) o).peek().getV();
+    return o.peek().getV();
   }
 }
 
