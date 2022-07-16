@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 public class ExpensiveNetwork {
 
   private static final String SEPARATOR = " ";
-  private static final String FILE = "input.txt";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final1/input12.txt";
+  //private static final String FILE = "input.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final1/input12.txt";
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
