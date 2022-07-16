@@ -1,4 +1,5 @@
-//69394296
+// 69405381
+package ru.yandex.algo.sprint6.final2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +20,9 @@ public class Railways {
 
   private static final String R = "R";
 
-  private static final String FILE = "input.txt";
+  //private static final String FILE = "input.txt";
+
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input15.txt";
 
   public static void main(String[] args) throws IOException {
     try (final BufferedReader in = new BufferedReader(
