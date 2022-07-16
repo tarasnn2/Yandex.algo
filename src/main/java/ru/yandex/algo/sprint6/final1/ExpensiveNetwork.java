@@ -1,4 +1,4 @@
-// 69286761
+// 69405356
 package ru.yandex.algo.sprint6.final1;
 
 import java.io.BufferedReader;
@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -17,22 +18,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Берем любую вершину, помещаем ее во множество просмотренных вершим и убираем из множества непросмотренных вершин. Выбираем ребра,
- * инцидентные для нашей вершины и вершин из множества не просмотренных. Из этих ребер выбираем самое весомое (удаляя из источника), если
- * конец ребра инцидентен вершинам из не добавленных вершин - добавляем это ребро в ответ. Повторяем, пока не закончатся необработанные
- * вершины.
+ * Берем любую вершину, убираем ее из множества непросмотренных вершин. Выбираем ребра, инцидентные для нашей вершины и вершин из множества
+ * не просмотренных. Из этих ребер выбираем самое весомое (удаляя из источника), если конец ребра инцидентен вершинам из не просмотренных
+ * вершин - добавляем это ребро в ответ. Повторяем, пока не закончатся необработанные вершины.
  *
- * <p>Сложность по памяти O(v+2e)
+ * <p>Сложность по памяти O(v+e)
  *
- * <p>Сложность по вычислению O(v * log e)
+ * <p>Сложность по вычислению O(v * e)
  *
  * <p>где v - кол-во вершин, e - кол-во ребер
  */
 public class ExpensiveNetwork {
 
   private static final String SEPARATOR = " ";
-  // private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final1/input12.txt";
+  private static final String FILE = "input.txt";
+  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final1/input12.txt";
 
   public static void main(String[] args) throws IOException {
     final Graph graph;
@@ -64,26 +64,24 @@ public class ExpensiveNetwork {
   }
 
   private static List<Edge> findMST(Graph graph) {
-    final Set<Vertex> added = new HashSet<>();
     final Queue<Edge> edges = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.getWeight(), o1.getWeight()));
     final List<Edge> mst = new ArrayList<>();
     final Set<Vertex> notAdded = new HashSet<>(graph.getVertexes());
-    addVertex(graph.getVertexes().stream().findFirst().get(), graph, added, notAdded, edges);
+    addVertex(graph.getVertexes().stream().findFirst().get(), graph, notAdded, edges);
     while (!notAdded.isEmpty() && !edges.isEmpty()) {
       final Edge edge = edges.poll();
       if (notAdded.contains(edge.getW())) {
         mst.add(edge);
-        addVertex(edge.getW(), graph, added, notAdded, edges);
+        addVertex(edge.getW(), graph, notAdded, edges);
       }
     }
     if (!notAdded.isEmpty()) {
-      return List.of();
+      return Collections.emptyList();
     }
     return mst;
   }
 
-  private static void addVertex(Vertex v, Graph graph, Set<Vertex> added, Set<Vertex> notAdded, Queue<Edge> edges) {
-    added.add(v);
+  private static void addVertex(Vertex v, Graph graph, Set<Vertex> notAdded, Queue<Edge> edges) {
     notAdded.remove(v);
     final Set<Edge> collect = graph.getEdges(v).stream()
         .filter(edge -> v.equals(edge.getV()) && notAdded.contains(edge.getW()))
@@ -110,21 +108,21 @@ public class ExpensiveNetwork {
 class Graph {
 
   private final Set<Vertex> vertexes;
-  private final Object[] edges;
+  private final Set<Edge>[] edges;
 
+  @SuppressWarnings("unchecked")
   Graph(int capacity) {
     this.vertexes = new HashSet<>(capacity);
-    this.edges = new Object[capacity];
+    this.edges = new HashSet[capacity];
   }
 
   Set<Vertex> getVertexes() {
     return vertexes;
   }
 
-  @SuppressWarnings("unchecked")
   void put(Edge edge) {
     final int i = edge.getV().getNumber() - 1;
-    Set<Edge> e = (Set<Edge>) edges[i];
+    Set<Edge> e = edges[i];
     if (null == e) {
       e = new HashSet<>();
       edges[i] = e;
@@ -132,9 +130,8 @@ class Graph {
     e.add(edge);
   }
 
-  @SuppressWarnings("unchecked")
   Set<Edge> getEdges(Vertex v) {
-    return (Set<Edge>) edges[v.getNumber() - 1];
+    return edges[v.getNumber() - 1];
   }
 }
 
