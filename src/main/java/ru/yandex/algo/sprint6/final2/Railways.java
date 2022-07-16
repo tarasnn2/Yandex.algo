@@ -1,4 +1,4 @@
-package ru.yandex.algo.sprint6.final2;
+//69394296
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.Queue;
 
 /**
  * Ищем цикличность в графе через dfs. Если цикличность есть - карта не оптимальная.
- * <p>Сложность по памяти O(2v+e)
+ * <p>Сложность по памяти O(v+e)
  * <p>Сложность по вычислению O(v + e)
  * <p>где v - кол-во вершин, e - кол-во ребер
  */
@@ -19,8 +19,7 @@ public class Railways {
 
   private static final String R = "R";
 
-  //private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint6/final2/input15.txt";
+  private static final String FILE = "input.txt";
 
   public static void main(String[] args) throws IOException {
     try (final BufferedReader in = new BufferedReader(
@@ -37,7 +36,7 @@ public class Railways {
 
   }
 
-  private static void recursiveDFS(int vertexV, Graph graph, Colors colors) {
+  private static void recursiveDFS(int vertexV, Graph graph, Colors colors) throws NoOptimalMap {
     colors.markColor(vertexV, Colors.GRAY);
     final Queue<Integer> edges = graph.getWs(vertexV);
     while (null != edges && !edges.isEmpty()) {
@@ -81,7 +80,7 @@ public class Railways {
     return graph;
   }
 
-  private static class NoOptimalMap extends RuntimeException {
+  private static class NoOptimalMap extends Exception {
 
     public NoOptimalMap(String message) {
       super(message);
