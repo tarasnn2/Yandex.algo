@@ -1,4 +1,4 @@
-//69411691
+// 69500235
 package ru.yandex.algo.sprint7.final1;
 
 import java.io.BufferedReader;
@@ -25,15 +25,15 @@ public class LevenshteinDistance {
         new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
       final String[] s = in.readLine().split("");
       final String[] t = in.readLine().split("");
-      String result;
+      int result;
       if (s.length == 0 && t.length == 0) {
-        result = "0";
+        result = 0;
       } else if (s.length == 0) {
-        result = t.length + "";
+        result = t.length;
       } else if (t.length == 0) {
-        result = s.length + "";
+        result = s.length;
       } else {
-        result = calc(s, t) + "";
+        result = calc(s, t);
       }
       System.out.println(result);
     }

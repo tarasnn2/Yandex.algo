@@ -1,4 +1,4 @@
-//69449354
+// 69500190
 package ru.yandex.algo.sprint7.final2;
 
 import java.io.BufferedReader;
@@ -56,17 +56,15 @@ public class EqualSum {
     return dp[halfNumberSum][number.length];
   }
 
+  // На задаче c графами накушался с TL и ML.
+  // Тут решил перестраховаться, сложная реализация в один проход все делает, а сейчас в два (split + for).
   private static int buildNumber(String line, int[] number) {
+    int i = 0;
     int numberSum = 0;
-    int start = 0;
-    String pattern = " ";
-    for (int i = 0; i < number.length; i++) {
-      final int o = line.indexOf(pattern, start);
-      final int off = o > -1 ? o : line.length();
-      final String digit = line.substring(start, off);
-      number[i] = Integer.parseInt(digit);
-      start += digit.length() + pattern.length();
+    for (String s : line.split(" ")) {
+      number[i] = Integer.parseInt(s);
       numberSum += number[i];
+      ++i;
     }
     return numberSum;
   }
