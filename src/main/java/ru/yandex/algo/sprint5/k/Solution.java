@@ -12,26 +12,28 @@ public class Solution {
 
 
   public static void printRange(Node root, int L, int R, BufferedWriter writer) throws IOException {
-    final List<Node> result = new ArrayList<>();
-    travers123(root, L, R, result);
+    if (null == root) {
+      return;
+    }
 
-    result.sort(Comparator.comparingInt(n -> n.value));
+    final List<Node> result = new ArrayList<>();
+    travers(root, L, R, result);
+
+    result.sort(Comparator.comparingInt(Node::getValue));
 
     StringBuilder sb = new StringBuilder(result.size() * 2);
-    result.forEach(node -> sb.append(node.value).append("\n"));
-
-    //sb.append("7").append("\n").append("11");
+    result.forEach(node -> sb.append(node.getValue()).append("\n"));
 
     writer.write(sb.toString());
   }
 
-  private static void travers123(Node node, int left, int right, List<Node> result) {
+  private static void travers(Node node, int left, int right, List<Node> result) {
     if (null != node) {
-      travers123(node.left, left, right, result);
-      if (left <= node.value && node.value <= right) {
+      travers(node.getLeft(), left, right, result);
+      if (left <= node.getValue() && node.getValue() <= right) {
         result.add(node);
       }
-      travers123(node.right, left, right, result);
+      travers(node.getRight(), left, right, result);
     }
   }
 
@@ -71,6 +73,7 @@ public class Solution {
       this.value = value;
     }
   }
+
   private static void test() throws IOException {
     Node node1 = new Node(null, null, 2);
     Node node2 = new Node(null, node1, 1);
@@ -84,6 +87,7 @@ public class Solution {
     writer.flush();
     // expected output: 2 5 8 8
   }
+
   public static void main(String[] args) throws IOException {
     test();
   }
