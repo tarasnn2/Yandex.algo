@@ -1,4 +1,4 @@
-//package ru.yandex.algo.sprint8.final1;
+package ru.yandex.algo.sprint8.final1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 public class PackedPrefix {
 
-  private static final String FILE = "input.txt";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint8/final1/input7.txt";
+  //private static final String FILE = "input.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint8/final1/input7.txt";
 
   private static final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
 
