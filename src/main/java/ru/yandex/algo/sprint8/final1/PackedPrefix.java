@@ -73,11 +73,20 @@ public class PackedPrefix {
 
       if ("]".equals(s)) {
         if (symbol.size() == 1) {
-          result.append(String.join("", symbol.removeLast()).repeat(multiply.removeLast()));
+          final int mult = multiply.removeLast();
+          String s1 = String.join("", symbol.removeLast());
+          for (int j = 0; j < mult; j++) {
+            result.append(s1);
+          }
+          //result.append(String.join("", symbol.removeLast()).repeat(multiply.removeLast()));
           continue;
         }
         final String previous = String.join("", symbol.removeLast());
-        symbol.getLast().add(previous.repeat(multiply.removeLast()));
+        final int mult = multiply.removeLast();
+        for (int j = 0; j < mult; j++) {
+          symbol.getLast().add(previous);
+        }
+        //symbol.getLast().add(previous.repeat(multiply.removeLast()));
         continue;
       }
       if (symbol.isEmpty()) {
