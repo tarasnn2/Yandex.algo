@@ -1,4 +1,4 @@
-//package ru.yandex.algo.sprint1.d;
+package ru.yandex.algo.sprint1.d;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 
 public class D {
   private static final String SEPARATOR = " ";
-  //private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/d/input01.txt";
-  private static final String FILE = "input.txt";
+  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint1/d/input01.txt";
+  //private static final String FILE = "input.txt";
 
   public static void main(String[] args) {
     int result = 0;
