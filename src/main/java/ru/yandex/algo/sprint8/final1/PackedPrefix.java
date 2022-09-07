@@ -8,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -25,34 +23,57 @@ public class PackedPrefix {
   public static void main(String[] args) throws IOException {
     try (final BufferedReader in = new BufferedReader(
         new InputStreamReader(Files.newInputStream(Paths.get(FILE)), StandardCharsets.UTF_8))) {
-      System.out.println(maxPrefix(in));
+
+      final int count = Integer.parseInt(in.readLine());
+      if (count == 0) {
+        System.out.println("");
+        return;
+      }
+      final String[] words = new String[count];
+      final int minLengthIndex = unpackAll(in, count, words);
+      //final String result = doCount(words, minLengthIndex);
+      final String result = maxPrefix(words, minLengthIndex);
+      System.out.println(result);
     }
   }
 
-  private static String maxPrefix(final BufferedReader in) throws IOException {
-    final int count = Integer.parseInt(in.readLine());
-    if (count == 0) {
-      return "";
-    }
-    final String[] strings = unpackAll(in, count);
-    String prefix = strings[0];
-    for (int i = 1; i < count; i++) {
-      final String s = strings[i];
-      while (!prefix.isEmpty() && !s.startsWith(prefix)) {
-        prefix = prefix.substring(0, prefix.length() - 1);
+  private static String maxPrefix(String[] words, int minLengthIndex) {
+    String minWord = words[minLengthIndex];
+    for (int i = 0; i < words.length; i++) {
+      final String s = words[i];
+      while (!minWord.isEmpty() && !s.startsWith(minWord)) {
+        minWord = minWord.substring(0, minWord.length() - 1);
       }
     }
-    return prefix;
+    return minWord;
+  }
+
+  private static String doCount(String[] words, int minLengthIndex) {
+    final String minWord = words[minLengthIndex];
+    for (int j = 0; j < minWord.length(); j++) {
+      for (int i = 0; i < words.length; i++) {
+        final String minWordSubstring = minWord.substring(j, j + 1);
+        final String wordSubstring = words[i].substring(j, j + 1);
+        if (!minWordSubstring.equals(wordSubstring)) {
+          return minWord.substring(0, j);
+        }
+      }
+    }
+    return minWord;
   }
 
 
-  private static String[] unpackAll(BufferedReader in, int count) throws IOException {
-    String[] result = new String[count];
+  private static int unpackAll(BufferedReader in, int count, String[] words) throws IOException {
+    int minLength = Integer.MAX_VALUE;
+    int minLengthIndex = -1;
     for (int i = 0; i < count; i++) {
-      result[i] = unpack(in.readLine());
+      words[i] = unpack(in.readLine());
+      if (minLength > words[i].length()) {
+        minLength = words[i].length();
+        minLengthIndex = i;
+      }
     }
-    Arrays.sort(result, Comparator.comparingInt(String::length));
-    return result;
+    return minLengthIndex;
   }
 
   private static String unpack(String line) {
@@ -60,12 +81,14 @@ public class PackedPrefix {
     final Deque<Integer> multiply = new ArrayDeque<>();
     final Deque<List<String>> symbol = new ArrayDeque<>();
     for (int i = 0; i < line.length(); i++) {
+
       String s = String.valueOf(line.charAt(i));
 
       if (isNumeric(s)) {
         multiply.add(Integer.parseInt(s));
         continue;
       }
+
       if ("[".equals(s)) {
         symbol.add(new ArrayList<>());
         continue;
@@ -73,22 +96,23 @@ public class PackedPrefix {
 
       if ("]".equals(s)) {
         if (symbol.size() == 1) {
-          final int mult = multiply.removeLast();
-          String s1 = String.join("", symbol.removeLast());
-          for (int j = 0; j < mult; j++) {
+          //final int mult = multiply.removeLast();
+          //String s1 = String.join("", symbol.removeLast());
+/*          for (int j = 0; j < mult; j++) {
             result.append(s1);
-          }
-          //result.append(String.join("", symbol.removeLast()).repeat(multiply.removeLast()));
+          }*/
+          result.append(String.join("", symbol.removeLast()).repeat(multiply.removeLast()));
           continue;
         }
         final String previous = String.join("", symbol.removeLast());
-        final int mult = multiply.removeLast();
-        for (int j = 0; j < mult; j++) {
+        //final int mult = multiply.removeLast();
+/*        for (int j = 0; j < mult; j++) {
           symbol.getLast().add(previous);
-        }
-        //symbol.getLast().add(previous.repeat(multiply.removeLast()));
+        }*/
+        symbol.getLast().add(previous.repeat(multiply.removeLast()));
         continue;
       }
+
       if (symbol.isEmpty()) {
         result.append(s);
         continue;
