@@ -1,3 +1,4 @@
+// 70230307
 package ru.yandex.algo.sprint8.final1;
 
 import java.io.BufferedReader;
@@ -7,11 +8,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * Распаковка требует O(n) по сложности и памяти. Во время распаковки определяемся с самой короткой строкой, берем ее за основу для
+ * вычисления maxPrefix. Поиск maxPrefix требует O(n^2) по сложности и O(n) по памяти. Самую короткую строку сравниваем с каждой строкой
+ * уменьшая ее на один символ для каждого неуспеха. В худшем случае мы получим пустую строку, в лучшем - стартовую.
+ */
 public class PackedPrefix {
 
   //private static final String FILE = "input.txt";
@@ -31,7 +35,6 @@ public class PackedPrefix {
       }
       final String[] words = new String[count];
       final int minLengthIndex = unpackAll(in, count, words);
-      //final String result = doCount(words, minLengthIndex);
       final String result = maxPrefix(words, minLengthIndex);
       System.out.println(result);
     }
@@ -47,21 +50,6 @@ public class PackedPrefix {
     }
     return minWord;
   }
-
-  private static String doCount(String[] words, int minLengthIndex) {
-    final String minWord = words[minLengthIndex];
-    for (int j = 0; j < minWord.length(); j++) {
-      for (int i = 0; i < words.length; i++) {
-        final String minWordSubstring = minWord.substring(j, j + 1);
-        final String wordSubstring = words[i].substring(j, j + 1);
-        if (!minWordSubstring.equals(wordSubstring)) {
-          return minWord.substring(0, j);
-        }
-      }
-    }
-    return minWord;
-  }
-
 
   private static int unpackAll(BufferedReader in, int count, String[] words) throws IOException {
     int minLength = Integer.MAX_VALUE;
@@ -79,7 +67,7 @@ public class PackedPrefix {
   private static String unpack(String line) {
     final StringBuilder result = new StringBuilder();
     final Deque<Integer> multiply = new ArrayDeque<>();
-    final Deque<List<String>> symbol = new ArrayDeque<>();
+    final Deque<StringBuilder> symbol = new ArrayDeque<>();
     for (int i = 0; i < line.length(); i++) {
 
       String s = String.valueOf(line.charAt(i));
@@ -90,26 +78,24 @@ public class PackedPrefix {
       }
 
       if ("[".equals(s)) {
-        symbol.add(new ArrayList<>());
+        symbol.add(new StringBuilder());
         continue;
       }
 
       if ("]".equals(s)) {
         if (symbol.size() == 1) {
-          //final int mult = multiply.removeLast();
-          //String s1 = String.join("", symbol.removeLast());
-/*          for (int j = 0; j < mult; j++) {
-            result.append(s1);
-          }*/
-          result.append(String.join("", symbol.removeLast()).repeat(multiply.removeLast()));
+          int m = multiply.removeLast();
+          final StringBuilder last = symbol.removeLast();
+          for (int j = 1; j <= m; j++) {
+            result.append(last);
+          }
           continue;
         }
-        final String previous = String.join("", symbol.removeLast());
-        //final int mult = multiply.removeLast();
-/*        for (int j = 0; j < mult; j++) {
-          symbol.getLast().add(previous);
-        }*/
-        symbol.getLast().add(previous.repeat(multiply.removeLast()));
+        StringBuilder last = symbol.removeLast();
+        final int m = multiply.removeLast();
+        for (int j = 1; j <= m; j++) {
+          symbol.getLast().append(last);
+        }
         continue;
       }
 
@@ -117,7 +103,7 @@ public class PackedPrefix {
         result.append(s);
         continue;
       }
-      symbol.getLast().add(s);
+      symbol.getLast().append(s);
     }
     return result.toString();
   }
