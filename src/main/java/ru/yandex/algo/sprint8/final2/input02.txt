@@ -1,0 +1,6 @@
+abacaba
+2
+abac
+caba
+
+NO
