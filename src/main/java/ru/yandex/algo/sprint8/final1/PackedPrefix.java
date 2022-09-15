@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class PackedPrefix {
 
   //private static final String FILE = "input.txt";
-  private static final String FILE = "/home/taras/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint8/final1/input7.txt";
+  private static final String FILE = "/home/taras/Code/repoMy/projects/Yandex.algo/src/main/java/ru/yandex/algo/sprint8/final1/input7.txt";
 
   private static final Pattern numericPattern = Pattern.compile("-?\\d+(\\.\\d+)?");
 
@@ -70,7 +70,7 @@ public class PackedPrefix {
     final Deque<StringBuilder> symbol = new ArrayDeque<>();
     for (int i = 0; i < line.length(); i++) {
 
-      String s = String.valueOf(line.charAt(i));
+      final String s = String.valueOf(line.charAt(i));
 
       if (isNumeric(s)) {
         multiply.add(Integer.parseInt(s));
@@ -84,14 +84,14 @@ public class PackedPrefix {
 
       if ("]".equals(s)) {
         if (symbol.size() == 1) {
-          int m = multiply.removeLast();
+          final int m = multiply.removeLast();
           final StringBuilder last = symbol.removeLast();
           for (int j = 1; j <= m; j++) {
             result.append(last);
           }
           continue;
         }
-        StringBuilder last = symbol.removeLast();
+        final StringBuilder last = symbol.removeLast();
         final int m = multiply.removeLast();
         for (int j = 1; j <= m; j++) {
           symbol.getLast().append(last);
